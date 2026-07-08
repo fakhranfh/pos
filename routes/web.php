@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -23,11 +23,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     });
 
-Route::post('/logout', function (Request $request) {
-    auth()->logout();
-
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-
-    return redirect()->route('login');
-})->middleware('auth')->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
