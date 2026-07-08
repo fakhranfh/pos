@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\Category\CategoryRepositoryInterface;
+use App\Support\UserTimezone;
 
 class CategoryService
 {
@@ -15,7 +16,7 @@ class CategoryService
 
     public function get(array $filters = [], array $with = [])
     {
-        return $this->categoryRepository->get($filters, $with);
+        return UserTimezone::apply($this->categoryRepository->get($filters, $with));
     }
 
     public function getAll()

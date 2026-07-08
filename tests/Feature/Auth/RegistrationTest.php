@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Http;
 beforeEach(function () {
     Http::fake([
         'api.pwnedpasswords.com/*' => Http::response('', 200),
+        'ip-api.com/*' => Http::response(['status' => 'success', 'timezone' => 'Asia/Jakarta'], 200),
     ]);
 });
 
@@ -29,6 +30,34 @@ test('user can register with valid data', function () {
         'name' => 'John Doe',
         'email' => 'john@example.com',
     ]);
+});
+
+test('registering stores the timezone resolved from the request IP', function () {
+    $this->call('POST', '/register', [
+        'name' => 'John Doe',
+        'email' => 'john@example.com',
+        'password' => 'Secret!Pass123#Secure',
+        'password_confirmation' => 'Secret!Pass123#Secure',
+    ], [], [], ['REMOTE_ADDR' => '8.8.8.8'])->assertRedirect('/dashboard');
+
+    $this->call('GET', '/dashboard', server: ['REMOTE_ADDR' => '8.8.8.8']);
+
+    expect(User::where('email', 'john@example.com')->first()->timezone)->toBe('Asia/Jakarta');
+});
+
+test('registering from a private/loopback IP still resolves a timezone', function () {
+    // Simulates local development, where the client IP is always private
+    // and cannot be geolocated directly.
+    $this->post('/register', [
+        'name' => 'Jane Doe',
+        'email' => 'jane@example.com',
+        'password' => 'Secret!Pass123#Secure',
+        'password_confirmation' => 'Secret!Pass123#Secure',
+    ])->assertRedirect('/dashboard');
+
+    $this->get('/dashboard');
+
+    expect(User::where('email', 'jane@example.com')->first()->timezone)->toBe('Asia/Jakarta');
 });
 
 test('registration fails when name is empty', function () {

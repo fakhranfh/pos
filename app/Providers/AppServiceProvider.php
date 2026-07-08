@@ -18,6 +18,7 @@ use App\Repositories\TransactionItem\TransactionItemRepository;
 use App\Repositories\TransactionItem\TransactionItemRepositoryInterface;
 use App\Repositories\User\UserRepository;
 use App\Repositories\User\UserRepositoryInterface;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Contracts\LoginResponse;
 use Laravel\Fortify\Contracts\VerifyEmailViewResponse;
@@ -34,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(LoginResponse::class, function ($app) {
-            return new CustomAuthenticatedSessionResponse;
+            return $app->make(CustomAuthenticatedSessionResponse::class);
         });
 
         $this->app->bind(AuthRepositoryInterface::class, AuthRepository::class);
@@ -51,6 +52,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Blade::directive('userDatetime', function (string $expression) {
+            return "<?php echo \App\Support\UserTimezone::format({$expression}); ?>";
+        });
     }
 }

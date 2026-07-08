@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands\Stubs;
 
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Schema;
 use App\Console\Commands\Helpers\SchemaHelper;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class TailwindBladeShowStubGenerator
 {
@@ -46,7 +46,7 @@ class TailwindBladeShowStubGenerator
                 break;
             }
         }
-        if (!$firstCol) {
+        if (! $firstCol) {
             $firstCol = 'id';
         }
 
@@ -76,11 +76,11 @@ class TailwindBladeShowStubGenerator
 HTML;
             } else {
                 if ($type === 'boolean') {
-                    $displayValue = '{{ $item->' . $col . ' ? __(\'Yes\') : __(\'No\') }}';
+                    $displayValue = '{{ $item->'.$col.' ? __(\'Yes\') : __(\'No\') }}';
                 } elseif (in_array($type, ['date', 'datetime', 'timestamp'])) {
-                    $displayValue = '{{ $item->' . $col . '?->format(\'d M Y H:i\') ?? $item->' . $col . ' }}';
+                    $displayValue = '@userDatetime($item->'.$col.')';
                 } else {
-                    $displayValue = '{{ $item->' . $col . ' }}';
+                    $displayValue = '{{ $item->'.$col.' }}';
                 }
 
                 $fields .= <<<HTML
@@ -158,14 +158,14 @@ HTML;
                         <div>
                             <p class="text-gray-500 dark:text-gray-400">{{ __('Created') }}</p>
                             <p class="text-gray-900 dark:text-white font-medium">
-                                {{ \$item->created_at?->format('d M Y H:i') }}
+                                @userDatetime(\$item->created_at)
                             </p>
                         </div>
 
                         <div>
                             <p class="text-gray-500 dark:text-gray-400">{{ __('Updated') }}</p>
                             <p class="text-gray-900 dark:text-white font-medium">
-                                {{ \$item->updated_at?->format('d M Y H:i') }}
+                                @userDatetime(\$item->updated_at)
                             </p>
                         </div>
                     </div>

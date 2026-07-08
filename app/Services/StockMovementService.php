@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\StockMovement\StockMovementRepositoryInterface;
+use App\Support\UserTimezone;
 
 class StockMovementService
 {
@@ -15,7 +16,7 @@ class StockMovementService
 
     public function get(array $filters = [], array $with = [])
     {
-        return $this->stockMovementRepository->get($filters, $with);
+        return UserTimezone::apply($this->stockMovementRepository->get($filters, $with));
     }
 
     public function getAll()

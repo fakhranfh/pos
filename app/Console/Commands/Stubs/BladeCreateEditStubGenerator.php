@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands\Stubs;
 
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Schema;
 use App\Console\Commands\Helpers\SchemaHelper;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class BladeCreateEditStubGenerator
 {
@@ -39,7 +39,7 @@ class BladeCreateEditStubGenerator
                 break;
             }
         }
-        if (!$firstCol) {
+        if (! $firstCol) {
             $firstCol = 'id';
         }
 
@@ -189,11 +189,11 @@ HTML;
           @if(isset(\$item))
             <div class="mb-3">
               <small class="text-muted">@lang('Created')</small>
-              <p class="mb-0">{{ \$item->created_at?->format('d M Y H:i') }}</p>
+              <p class="mb-0">@userDatetime(\$item->created_at)</p>
             </div>
             <div class="mb-3">
               <small class="text-muted">@lang('Updated')</small>
-              <p class="mb-0">{{ \$item->updated_at?->format('d M Y H:i') }}</p>
+              <p class="mb-0">@userDatetime(\$item->updated_at)</p>
             </div>
             <hr>
             <button type="button" class="btn btn-sm btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteModal">

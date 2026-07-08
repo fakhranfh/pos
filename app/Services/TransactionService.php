@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Repositories\StockMovement\StockMovementRepositoryInterface;
 use App\Repositories\Transaction\TransactionRepositoryInterface;
 use App\Repositories\TransactionItem\TransactionItemRepositoryInterface;
+use App\Support\UserTimezone;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -117,7 +118,7 @@ class TransactionService
 
     public function get(array $filters = [], array $with = [])
     {
-        return $this->transactionRepository->get($filters, $with);
+        return UserTimezone::apply($this->transactionRepository->get($filters, $with));
     }
 
     public function getAll()

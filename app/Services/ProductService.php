@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\Product\ProductRepositoryInterface;
+use App\Support\UserTimezone;
 
 class ProductService
 {
@@ -15,7 +16,7 @@ class ProductService
 
     public function get(array $filters = [], array $with = [])
     {
-        return $this->productRepository->get($filters, $with);
+        return UserTimezone::apply($this->productRepository->get($filters, $with));
     }
 
     public function getAll()

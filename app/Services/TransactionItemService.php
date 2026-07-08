@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\TransactionItem\TransactionItemRepositoryInterface;
+use App\Support\UserTimezone;
 
 class TransactionItemService
 {
@@ -15,7 +16,7 @@ class TransactionItemService
 
     public function get(array $filters = [], array $with = [])
     {
-        return $this->transactionItemRepository->get($filters, $with);
+        return UserTimezone::apply($this->transactionItemRepository->get($filters, $with));
     }
 
     public function getAll()
