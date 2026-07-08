@@ -14,11 +14,15 @@ return new class extends Migration
         Schema::dropIfExists('passkeys');
 
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn([
+            $columns = array_filter([
                 'two_factor_secret',
                 'two_factor_recovery_codes',
                 'two_factor_confirmed_at',
-            ]);
+            ], fn (string $column) => Schema::hasColumn('users', $column));
+
+            if ($columns !== []) {
+                $table->dropColumn($columns);
+            }
         });
     }
 
