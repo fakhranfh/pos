@@ -278,7 +278,7 @@ Accessible at `/checkout` from the sidebar — this is the cashier's main screen
 | Area | Contents |
 |---|---|
 | **Left panel** | Search box + a grid of available products |
-| **Right panel** | Cart, totals, customer, payment, and the **Pay** button |
+| **Right panel** | Cart, totals, payment, and the **Pay** button |
 
 ### Searching and Adding Products
 
@@ -302,10 +302,6 @@ Each cart line has:
 
 Enter an amount in the **Discount** field (cart-level, fixed amount). The **Total** updates immediately. The discount is automatically capped so the total never goes below zero.
 
-### Choosing a Customer (Optional)
-
-Use the **Customer** dropdown to attach an existing customer to the sale, or leave it as **Walk-in** to complete the sale without one.
-
 ### Payment
 
 1. Choose a **Payment Method**: Cash or Other
@@ -325,7 +321,7 @@ All of these show as an inline red message above the cart; no page reload occurs
 
 ### After a Successful Payment
 
-1. You are taken to the **Receipt** page showing the invoice number, cashier, customer, line items, subtotal, discount, total, amount paid, and change
+1. You are taken to the **Receipt** page showing the invoice number, cashier, line items, subtotal, discount, total, amount paid, and change
 2. Product stock is deducted automatically for each item sold
 3. Click **Print** to print the receipt, or **New Sale** to return to the checkout screen for the next customer
 

@@ -82,20 +82,6 @@
           @enderror
         </div>
         <div class="mb-4">
-          <label for="customer_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">@lang('Customer Id (optional)')</label>
-          <select id="customer_id" name="customer_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            <option value="">-- @lang('None') --</option>
-            @foreach ($customers as $customer)
-              <option value="{{ $customer->id }}" {{ (isset($item) && $item->customer_id == $customer->id) || old('customer_id') == $customer->id ? 'selected' : '' }}>
-                {{ $customer->name }}
-              </option>
-            @endforeach
-          </select>
-          @error('customer_id')
-            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-          @enderror
-        </div>
-        <div class="mb-4">
           <label for="subtotal" class="block text-sm font-medium text-gray-700 dark:text-gray-300">@lang('Subtotal')</label>
           <input type="number" id="subtotal" name="subtotal" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" value="{{ isset($item) ? $item->subtotal : old('subtotal') }}" required />
           @error('subtotal')

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Transaction\StoreTransactionRequest;
 use App\Http\Requests\Transaction\UpdateTransactionRequest;
 use App\Models\User;
-use App\Services\CustomerService;
 use App\Services\TransactionService;
 use Illuminate\Http\Request;
 
@@ -13,20 +12,15 @@ class TransactionController extends Controller
 {
     protected $transactionService;
 
-    protected $customerService;
-
     public function __construct(
         TransactionService $transactionService,
-        CustomerService $customerService,
     ) {
         $this->transactionService = $transactionService;
-        $this->customerService = $customerService;
     }
 
     private function foreignData()
     {
         return [
-            'customers' => $this->customerService->getAll(),
             'users' => User::all(),
         ];
     }

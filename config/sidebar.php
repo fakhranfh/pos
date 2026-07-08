@@ -26,12 +26,6 @@ return [
         'active_pattern' => 'products.*',
     ],
     [
-        'label' => 'Customers',
-        'route' => 'customers.index',
-        'icon' => 'person',
-        'active_pattern' => 'customers.*',
-    ],
-    [
         'label' => 'Stock Movements',
         'route' => 'stock-movements.index',
         'icon' => 'inventory',

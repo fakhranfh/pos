@@ -17,7 +17,6 @@ class UpdateTransactionRequest extends FormRequest
         return [
             'invoice_number' => ['required', 'string', 'max:255', Rule::unique('transactions', 'invoice_number')->ignore($this->route('transaction'))],
             'cashier_id' => 'required|integer|exists:users,id',
-            'customer_id' => 'nullable|integer|exists:customers,id',
             'subtotal' => 'required|numeric|min:0',
             'discount_amount' => 'nullable|numeric|min:0',
             'tax_amount' => 'nullable|numeric|min:0',

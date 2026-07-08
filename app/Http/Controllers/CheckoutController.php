@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Checkout\StoreCheckoutRequest;
-use App\Services\CustomerService;
 use App\Services\ProductService;
 use App\Services\TransactionService;
 use Illuminate\Http\Request;
@@ -15,23 +14,17 @@ class CheckoutController extends Controller
 
     protected $transactionService;
 
-    protected $customerService;
-
     public function __construct(
         ProductService $productService,
         TransactionService $transactionService,
-        CustomerService $customerService,
     ) {
         $this->productService = $productService;
         $this->transactionService = $transactionService;
-        $this->customerService = $customerService;
     }
 
     public function index()
     {
-        return view('checkout.index', [
-            'customers' => $this->customerService->getAll(),
-        ]);
+        return view('checkout.index');
     }
 
     public function search(Request $request)
@@ -71,7 +64,7 @@ class CheckoutController extends Controller
 
         abort_if(! $transaction, 404);
 
-        $transaction->load(['items', 'customer', 'cashier']);
+        $transaction->load(['items', 'cashier']);
 
         return view('checkout.receipt', [
             'transaction' => $transaction,

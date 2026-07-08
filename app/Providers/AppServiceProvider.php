@@ -8,8 +8,6 @@ use App\Repositories\Auth\AuthRepository;
 use App\Repositories\Auth\AuthRepositoryInterface;
 use App\Repositories\Category\CategoryRepository;
 use App\Repositories\Category\CategoryRepositoryInterface;
-use App\Repositories\Customer\CustomerRepository;
-use App\Repositories\Customer\CustomerRepositoryInterface;
 use App\Repositories\Product\ProductRepository;
 use App\Repositories\Product\ProductRepositoryInterface;
 use App\Repositories\StockMovement\StockMovementRepository;
@@ -43,7 +41,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
-        $this->app->bind(CustomerRepositoryInterface::class, CustomerRepository::class);
         $this->app->bind(StockMovementRepositoryInterface::class, StockMovementRepository::class);
         $this->app->bind(TransactionRepositoryInterface::class, TransactionRepository::class);
         $this->app->bind(TransactionItemRepositoryInterface::class, TransactionItemRepository::class);

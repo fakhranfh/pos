@@ -65,7 +65,6 @@ class TransactionService
             $transaction = $this->transactionRepository->create([
                 'invoice_number' => $this->generateInvoiceNumber(),
                 'cashier_id' => $data['cashier_id'],
-                'customer_id' => $data['customer_id'] ?? null,
                 'subtotal' => $subtotal,
                 'discount_amount' => $discountAmount,
                 'tax_amount' => $taxAmount,
@@ -102,7 +101,7 @@ class TransactionService
                 ]);
             }
 
-            return $transaction->load(['items', 'customer', 'cashier']);
+            return $transaction->load(['items', 'cashier']);
         });
     }
 

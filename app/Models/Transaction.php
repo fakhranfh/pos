@@ -11,7 +11,6 @@ class Transaction extends Model
     protected $fillable = [
         'invoice_number',
         'cashier_id',
-        'customer_id',
         'subtotal',
         'discount_amount',
         'tax_amount',
@@ -37,11 +36,6 @@ class Transaction extends Model
     public function cashier(): BelongsTo
     {
         return $this->belongsTo(User::class, 'cashier_id');
-    }
-
-    public function customer(): BelongsTo
-    {
-        return $this->belongsTo(Customer::class);
     }
 
     public function items(): HasMany

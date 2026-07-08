@@ -133,7 +133,7 @@
             <div class="mx-auto max-w-6xl px-gutter py-space-xl lg:px-space-xl">
                 <div class="reveal max-w-2xl" style="animation-delay: 0.05s">
                     <h2 class="text-balance font-headline-md text-headline-md text-on-surface tracking-[-0.02em]">One screen. Every sale tracked, every item counted.</h2>
-                    <p class="mt-space-sm font-body-lg text-body-lg text-on-surface-variant">Every sale updates your stock the second it happens. No manual counting, no end-of-day guesswork. Cashiers get one simple checkout screen. Owners get the full picture &mdash; stock, customers and sales &mdash; without digging through paper.</p>
+                    <p class="mt-space-sm font-body-lg text-body-lg text-on-surface-variant">Every sale updates your stock the second it happens. No manual counting, no end-of-day guesswork. Cashiers get one simple checkout screen. Owners get the full picture &mdash; stock and sales &mdash; without digging through paper.</p>
                 </div>
             </div>
         </section>

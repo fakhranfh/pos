@@ -6,11 +6,11 @@ product
 
 ## Users
 
-Two roles: **Admins** who manage the product catalog, stock, customers, and sales reports; and **Cashiers** who run register-style checkout (search/add products, apply discounts, take payment, calculate change). Small-to-medium retail and F&B business owners/staff, often on a shared in-store terminal, needing speed and low error tolerance during a live transaction.
+Two roles: **Admins** who manage the product catalog, stock, and sales reports; and **Cashiers** who run register-style checkout (search/add products, apply discounts, take payment, calculate change). Small-to-medium retail and F&B business owners/staff, often on a shared in-store terminal, needing speed and low error tolerance during a live transaction.
 
 ## Product Purpose
 
-A web-based Point of Sale system (Laravel 13) for single-outlet retail/F&B businesses: product & inventory management, customer records, cashier checkout, transaction history, and sales reporting. MVP scope — cash/manual payment only, no payment gateway, no offline support. Success = a cashier can complete a sale in seconds with no training beyond a walkthrough.
+A web-based Point of Sale system (Laravel 13) for single-outlet retail/F&B businesses: product & inventory management, cashier checkout, transaction history, and sales reporting. MVP scope — cash/manual payment only, no payment gateway, no offline support. Success = a cashier can complete a sale in seconds with no training beyond a walkthrough.
 
 ## Brand Personality
 

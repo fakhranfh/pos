@@ -2,7 +2,7 @@
 
 A web-based Point of Sale application built on Laravel 13, designed for small-to-medium retail and F&B businesses that need a fast, reliable way to record sales, manage inventory, and track daily revenue.
 
-The core module lets cashiers run a register-style checkout (search/add products, apply discounts, take payment, calculate change) while admins manage the product catalog, stock, customers, and sales reports — all without leaving the browser.
+The core module lets cashiers run a register-style checkout (search/add products, apply discounts, take payment, calculate change) while admins manage the product catalog, stock, and sales reports — all without leaving the browser.
 
 > [!NOTE]
 > This project follows the Repository Pattern and CRUD generator conventions inherited from its [Laravel 13 boilerplate](https://github.com/fakhranfh/laravel-13-boilerplate) foundation. See [docs/PRD_POS_CORE_FEATURES.md](docs/PRD_POS_CORE_FEATURES.md) for the full product spec.
@@ -24,7 +24,6 @@ The core module lets cashiers run a register-style checkout (search/add products
 
 - **Product & category management** — SKU, price, cost, stock, image, category, soft-deletable to preserve transaction history
 - **Inventory tracking** — stock movements (sale, stock-in, adjustment, return) and low-stock alerts
-- **Customer management** — optional customer attached to a sale
 - **Cashier checkout** — cart, quantity adjustment, discounts, payment, change calculation
 - **Transaction history** — filterable list with line-item detail per sale
 - **Sales reporting** — date-range totals and best-selling products

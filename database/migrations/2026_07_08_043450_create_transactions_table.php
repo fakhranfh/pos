@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('invoice_number')->unique();
             $table->foreignId('cashier_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
-            $table->foreignId('customer_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
             $table->decimal('subtotal', 12, 2);
             $table->decimal('discount_amount', 12, 2)->default(0);
             $table->decimal('tax_amount', 12, 2)->default(0);

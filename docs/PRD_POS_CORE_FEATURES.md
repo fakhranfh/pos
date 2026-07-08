@@ -8,7 +8,7 @@
 Small-to-medium retail and F&B businesses need a fast, reliable way to record sales transactions, manage inventory, and track daily revenue. Manual recording (paper or spreadsheets) is slow, error-prone, and gives owners no real-time visibility into stock levels or sales performance. Cashiers need a checkout flow that is fast enough to use during rush hours without mistakes.
 
 **Proposed Solution:**
-A web-based POS application (Laravel 13) that lets cashiers process sales at a register-style checkout screen, automatically deducts stock, records payments, and gives owners/admins tools to manage products, categories, inventory, customers, and view sales reports.
+A web-based POS application (Laravel 13) that lets cashiers process sales at a register-style checkout screen, automatically deducts stock, records payments, and gives owners/admins tools to manage products, categories, inventory, and view sales reports.
 
 **AI Build Summary:**
 > Build a Laravel 13 + Blade/Livewire (or Inertia, per existing stack) web app implementing core POS functionality: product & category management, inventory tracking, a cashier checkout screen (cart, discounts, payment, receipt), transaction history, and basic sales reporting. Follow the project's existing Repository Pattern (`docs/REPOSITORY_PATTERN.md`) and CRUD generator conventions (`docs/CRUD_GENERATOR.md`). Multi-user with roles (Admin, Cashier). No offline support required for MVP. Single-store/single-outlet scope for MVP; multi-outlet is Phase 2. All implementation must follow the project's [CLAUDE.md](../CLAUDE.md) Laravel Boost guidelines (see Section 3, Technical Constraints).
@@ -37,7 +37,6 @@ A web-based POS application (Laravel 13) that lets cashiers process sales at a r
 **In scope:**
 - Product & category CRUD (with SKU, price, stock, image)
 - Inventory tracking (stock in/out, adjustment, low-stock alerts)
-- Customer management (optional customer on a sale)
 - Cashier checkout (cart, quantity adjust, discount, tax, payment, change calculation)
 - Transaction history & receipt view/print
 - Basic sales reports (daily/weekly/monthly, best-selling products)
@@ -77,6 +76,7 @@ A web-based POS application (Laravel 13) that lets cashiers process sales at a r
 | 3 | When the day ends, I want to see total sales and what sold best, so I can make informed restocking and staffing decisions. |
 | 4 | When I add a new product, I want a simple form to set its price, category, and stock, so I can start selling it immediately. |
 
+
 ---
 
 ## 5. User Stories
@@ -91,7 +91,6 @@ A web-based POS application (Laravel 13) that lets cashiers process sales at a r
 | US6 | Admin | I want to see a low-stock alert list | so that I can reorder in time | J2 |
 | US7 | Admin | I want to view a sales report by date range | so that I can track business performance | J3 |
 | US8 | Admin | I want to view a list of past transactions with details | so that I can investigate a specific sale | J3 |
-| US9 | Cashier | I want to attach an existing customer to a sale (optional) | so that we can track repeat customer purchases | J1 |
 
 ---
 
@@ -107,7 +106,6 @@ The checkout screen behaves like a register: large touch/click targets, product 
 - Product list/form (index, create, edit) — standard CRUD table
 - Category list/form — standard CRUD table
 - Inventory adjustment screen — select product, enter adjustment qty + reason
-- Customer list/form — standard CRUD table
 - Sales report dashboard — date range filter, totals, top products table/chart
 - Transaction history — list with filters (date, cashier, status), detail view
 - Empty state: "No products yet" on catalog, "No transactions today" on reports
@@ -145,8 +143,6 @@ The checkout screen behaves like a register: large touch/click targets, product 
 | CategoryForm | Form | Create/edit category | US4 |
 | StockAdjustmentForm | Form | Adjust stock qty with reason | US5 |
 | LowStockAlertList | Display | List of products below threshold | US6 |
-| CustomerForm | Form | Create/edit customer | US9 |
-| CustomerSelect | Form | Autocomplete select for attaching customer to sale | US9 |
 | SalesReportFilter | Form | Date range + grouping filter | US7 |
 | SalesReportChart | Display | Sales-over-time chart | US7 |
 | TopProductsTable | Display | Best-selling products table | US7 |
@@ -191,20 +187,10 @@ interface StockMovement {
   createdAt: string;
 }
 
-interface Customer {
-  id: string;
-  name: string;
-  phone: string | null;
-  email: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
 interface Transaction {
   id: string;
   invoiceNumber: string;      // human-readable, sequential
   cashierId: string;          // FK -> User
-  customerId: string | null;  // FK -> Customer
   subtotal: number;
   discountAmount: number;
   taxAmount: number;
@@ -242,8 +228,6 @@ interface TransactionItem {
 | POST | /categories | Create category | Yes (Admin) | `Category` |
 | POST | /stock-movements | Record stock adjustment/stock-in | Yes (Admin) | `StockMovement` |
 | GET | /stock-movements/low-stock | List products at/below threshold | Yes | `{ data: Product[] }` |
-| GET | /customers | List/search customers | Yes | `{ data: Customer[] }` |
-| POST | /customers | Create customer | Yes | `Customer` |
 | POST | /transactions | Create a completed sale (checkout submit) | Yes (Cashier) | `Transaction` |
 | GET | /transactions | List transactions (filter by date, cashier, status) | Yes | `{ data: Transaction[], total: number }` |
 | GET | /transactions/:id | Get transaction detail with items | Yes | `Transaction & { items: TransactionItem[] }` |
@@ -288,7 +272,6 @@ app/
 │   ├── Category.php
 │   ├── Product.php
 │   ├── StockMovement.php
-│   ├── Customer.php
 │   ├── Transaction.php
 │   └── TransactionItem.php
 ├── Repositories/
@@ -296,20 +279,17 @@ app/
 │   │   ├── ProductRepositoryInterface.php
 │   │   └── ProductRepository.php
 │   ├── Category/...
-│   ├── Customer/...
 │   ├── StockMovement/...
 │   └── Transaction/...
 ├── Services/
 │   ├── ProductService.php
 │   ├── CategoryService.php
 │   ├── InventoryService.php      # stock deduction, adjustment, low-stock check
-│   ├── CustomerService.php
 │   └── CheckoutService.php       # cart total calc, payment, transaction creation
 ├── Http/
 │   ├── Controllers/
 │   │   ├── ProductController.php
 │   │   ├── CategoryController.php
-│   │   ├── CustomerController.php
 │   │   ├── CheckoutController.php
 │   │   ├── TransactionController.php
 │   │   └── ReportController.php
@@ -323,7 +303,6 @@ resources/
     │   └── index.blade.php
     ├── products/
     ├── categories/
-    ├── customers/
     ├── transactions/
     └── reports/
 database/
@@ -331,7 +310,6 @@ database/
     ├── xxxx_create_categories_table.php
     ├── xxxx_create_products_table.php
     ├── xxxx_create_stock_movements_table.php
-    ├── xxxx_create_customers_table.php
     ├── xxxx_create_transactions_table.php
     └── xxxx_create_transaction_items_table.php
 ```
@@ -383,11 +361,6 @@ database/
 - [ ] Clicking a transaction shows full line-item detail, payment info, and cashier
 - [ ] Admin can void a completed transaction, which restocks the sold items via new StockMovement records of type 'return'
 
-**US9 — Attach customer to sale**
-- [ ] Customer field on checkout is optional
-- [ ] Typing searches existing customers by name/phone
-- [ ] Sale can be completed with no customer selected
-
 ---
 
 ## 14. Open Questions & Risks
@@ -404,7 +377,7 @@ database/
 
 **MVP scope:**
 - Includes: Product/category CRUD, inventory tracking with stock movements, checkout flow, transaction history, basic sales report, Admin/Cashier roles
-- Excludes: Multi-outlet, payment gateway integration, loyalty/promotions, purchase orders
+- Excludes: Multi-outlet, payment gateway integration, loyalty/promotions, purchase orders, customer management
 
 **Phase 2+ ideas:**
 - Multi-outlet inventory
@@ -420,5 +393,5 @@ database/
 
 **Next steps:**
 1. Confirm Blade+Livewire vs. existing frontend approach used by CRUD generator — *Owner: Eng lead*
-2. Scaffold models/migrations via `php artisan make:rsc` for Product, Category, Customer — *Owner: Eng*
+2. Scaffold models/migrations via `php artisan make:rsc` for Product, Category — *Owner: Eng*
 3. Design checkout screen wireframe — *Owner: Design*

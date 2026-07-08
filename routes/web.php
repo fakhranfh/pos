@@ -3,7 +3,6 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StockMovementController;
@@ -38,9 +37,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('products/data/list', [ProductController::class, 'list'])->name('products.list');
     Route::resource('products', ProductController::class);
-
-    Route::get('customers/data/list', [CustomerController::class, 'list'])->name('customers.list');
-    Route::resource('customers', CustomerController::class);
 
     Route::get('stock-movements/data/list', [StockMovementController::class, 'list'])->name('stock-movements.list');
     Route::resource('stock-movements', StockMovementController::class);

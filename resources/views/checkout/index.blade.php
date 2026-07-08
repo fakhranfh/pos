@@ -57,16 +57,6 @@
                 </div>
 
                 <div>
-                    <label for="customerSelect" class="block text-sm text-gray-600 dark:text-gray-400">{{ __('Customer (optional)') }}</label>
-                    <select id="customerSelect" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                        <option value="">-- {{ __('Walk-in') }} --</option>
-                        @foreach ($customers as $customer)
-                            <option value="{{ $customer->id }}">{{ $customer->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
                     <label for="paymentMethod" class="block text-sm text-gray-600 dark:text-gray-400">{{ __('Payment Method') }}</label>
                     <select id="paymentMethod" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         <option value="cash">{{ __('Cash') }}</option>
@@ -304,7 +294,6 @@
                 'Accept': 'application/json',
             },
             body: JSON.stringify({
-                customer_id: document.getElementById('customerSelect').value || null,
                 items: cart.map((line) => ({ product_id: line.id, quantity: line.quantity })),
                 discount_amount: discount,
                 payment_method: document.getElementById('paymentMethod').value,

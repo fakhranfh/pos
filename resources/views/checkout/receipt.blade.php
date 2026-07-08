@@ -26,10 +26,6 @@
                 <span>{{ __('Cashier') }}</span>
                 <span>{{ $transaction->cashier->name ?? '-' }}</span>
             </div>
-            <div class="flex justify-between">
-                <span>{{ __('Customer') }}</span>
-                <span>{{ $transaction->customer->name ?? __('Walk-in') }}</span>
-            </div>
         </div>
 
         <table class="w-full text-sm mb-4">

@@ -16,7 +16,6 @@ class StoreTransactionRequest extends FormRequest
         return [
             'invoice_number' => 'required|string|max:255|unique:transactions,invoice_number',
             'cashier_id' => 'required|integer|exists:users,id',
-            'customer_id' => 'nullable|integer|exists:customers,id',
             'subtotal' => 'required|numeric|min:0',
             'discount_amount' => 'nullable|numeric|min:0',
             'tax_amount' => 'nullable|numeric|min:0',
