@@ -6,4 +6,84 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Color tokens - trustworthy/efficient POS brand, OKLCH */
+    --color-background: oklch(98% 0.004 255);
+    --color-on-background: oklch(22% 0.02 255);
+
+    --color-surface: oklch(99% 0.002 255);
+    --color-surface-container-lowest: oklch(100% 0 0);
+    --color-surface-container-low: oklch(97% 0.005 255);
+    --color-surface-container: oklch(95% 0.007 255);
+    --color-surface-tint: oklch(45% 0.16 255);
+    --color-on-surface: oklch(22% 0.02 255);
+    --color-on-surface-variant: oklch(42% 0.02 255);
+
+    --color-outline: oklch(56% 0.015 255);
+    --color-outline-variant: oklch(87% 0.008 255);
+
+    --color-primary: oklch(45% 0.16 255);
+    --color-on-primary: oklch(99% 0 0);
+    --color-primary-container: oklch(91% 0.04 255);
+    --color-on-primary-container: oklch(28% 0.09 255);
+    --color-primary-fixed-variant: oklch(30% 0.1 255);
+
+    --color-secondary: oklch(45% 0.02 255);
+    --color-on-secondary: oklch(99% 0 0);
+
+    --color-success: oklch(56% 0.15 145);
+    --color-on-success: oklch(99% 0 0);
+    --color-success-container: oklch(93% 0.05 145);
+    --color-on-success-container: oklch(28% 0.08 145);
+
+    --color-warning: oklch(66% 0.15 75);
+    --color-on-warning: oklch(20% 0.03 75);
+    --color-warning-container: oklch(93% 0.05 75);
+
+    --color-error: oklch(55% 0.2 25);
+    --color-on-error: oklch(99% 0 0);
+    --color-error-container: oklch(93% 0.05 25);
+    --color-on-error-container: oklch(30% 0.1 25);
+
+    --color-info: oklch(55% 0.12 240);
+    --color-on-info: oklch(99% 0 0);
+
+    /* Spacing tokens */
+    --spacing-gutter: 1rem;
+    --spacing-space-xxs: 0.25rem;
+    --spacing-space-xs: 0.5rem;
+    --spacing-space-sm: 0.75rem;
+    --spacing-space-md: 1rem;
+    --spacing-space-lg: 1.5rem;
+    --spacing-space-xl: 2rem;
+
+    /* Typography: font families (single family, consistent with existing font-sans load) */
+    --font-headline-lg: var(--font-sans);
+    --font-headline-md: var(--font-sans);
+    --font-headline-sm: var(--font-sans);
+    --font-body-lg: var(--font-sans);
+    --font-body-md: var(--font-sans);
+    --font-body-sm: var(--font-sans);
+    --font-label-md: var(--font-sans);
+    --font-label-sm: var(--font-sans);
+
+    /* Typography: font sizes + line heights */
+    --text-headline-lg: 1.875rem;
+    --text-headline-lg--line-height: 2.25rem;
+    --text-headline-md: 1.5rem;
+    --text-headline-md--line-height: 2rem;
+    --text-headline-sm: 1.25rem;
+    --text-headline-sm--line-height: 1.75rem;
+    --text-body-lg: 1rem;
+    --text-body-lg--line-height: 1.5rem;
+    --text-body-md: 0.875rem;
+    --text-body-md--line-height: 1.25rem;
+    --text-body-sm: 0.8125rem;
+    --text-body-sm--line-height: 1.125rem;
+    --text-label-md: 0.75rem;
+    --text-label-md--line-height: 1rem;
+    --text-label-md--letter-spacing: 0.02em;
+    --text-label-sm: 0.6875rem;
+    --text-label-sm--line-height: 0.875rem;
+    --text-label-sm--letter-spacing: 0.05em;
 }
