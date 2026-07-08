@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -26,6 +27,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('/change-password', 'change-password')->name('change-password');
 
     Route::view('/dashboard', 'dashboard')->name('dashboard');
+
+    Route::get('checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::get('checkout/products', [CheckoutController::class, 'search'])->name('checkout.products');
+    Route::post('checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('checkout/{transaction}/receipt', [CheckoutController::class, 'receipt'])->name('checkout.receipt');
 
     Route::get('categories/data/list', [CategoryController::class, 'list'])->name('categories.list');
     Route::resource('categories', CategoryController::class);

@@ -19,4 +19,6 @@ interface ProductRepositoryInterface
     public function delete($id);
 
     public function lowStock();
+
+    public function searchAvailable(string $term = '');
 }

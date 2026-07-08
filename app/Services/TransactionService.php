@@ -2,15 +2,118 @@
 
 namespace App\Services;
 
+use App\Models\Product;
+use App\Repositories\StockMovement\StockMovementRepositoryInterface;
 use App\Repositories\Transaction\TransactionRepositoryInterface;
+use App\Repositories\TransactionItem\TransactionItemRepositoryInterface;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class TransactionService
 {
     protected $transactionRepository;
 
-    public function __construct(TransactionRepositoryInterface $transactionRepository)
-    {
+    protected $transactionItemRepository;
+
+    protected $stockMovementRepository;
+
+    public function __construct(
+        TransactionRepositoryInterface $transactionRepository,
+        TransactionItemRepositoryInterface $transactionItemRepository,
+        StockMovementRepositoryInterface $stockMovementRepository,
+    ) {
         $this->transactionRepository = $transactionRepository;
+        $this->transactionItemRepository = $transactionItemRepository;
+        $this->stockMovementRepository = $stockMovementRepository;
+    }
+
+    public function checkout(array $data)
+    {
+        return DB::transaction(function () use ($data) {
+            $products = [];
+            $subtotal = 0;
+
+            foreach ($data['items'] as $line) {
+                $product = Product::whereKey($line['product_id'])->lockForUpdate()->first();
+
+                if (! $product || ! $product->is_active) {
+                    throw ValidationException::withMessages([
+                        'items' => "Product #{$line['product_id']} is not available.",
+                    ]);
+                }
+
+                if ($product->stock < $line['quantity']) {
+                    throw ValidationException::withMessages([
+                        'items' => "Insufficient stock for {$product->name}.",
+                    ]);
+                }
+
+                $products[] = ['product' => $product, 'quantity' => $line['quantity']];
+                $subtotal += $product->price * $line['quantity'];
+            }
+
+            $discountAmount = min($data['discount_amount'] ?? 0, $subtotal);
+            $taxAmount = $data['tax_amount'] ?? 0;
+            $total = max($subtotal - $discountAmount + $taxAmount, 0);
+
+            if ($data['amount_tendered'] < $total) {
+                throw ValidationException::withMessages([
+                    'amount_tendered' => 'Amount tendered must be at least the total due.',
+                ]);
+            }
+
+            $transaction = $this->transactionRepository->create([
+                'invoice_number' => $this->generateInvoiceNumber(),
+                'cashier_id' => $data['cashier_id'],
+                'customer_id' => $data['customer_id'] ?? null,
+                'subtotal' => $subtotal,
+                'discount_amount' => $discountAmount,
+                'tax_amount' => $taxAmount,
+                'total' => $total,
+                'amount_tendered' => $data['amount_tendered'],
+                'change_due' => $data['amount_tendered'] - $total,
+                'payment_method' => $data['payment_method'],
+                'status' => 'completed',
+            ]);
+
+            foreach ($products as $line) {
+                $product = $line['product'];
+                $quantity = $line['quantity'];
+                $lineTotal = $product->price * $quantity;
+
+                $this->transactionItemRepository->create([
+                    'transaction_id' => $transaction->id,
+                    'product_id' => $product->id,
+                    'product_name' => $product->name,
+                    'unit_price' => $product->price,
+                    'quantity' => $quantity,
+                    'discount_amount' => 0,
+                    'line_total' => $lineTotal,
+                ]);
+
+                $product->decrement('stock', $quantity);
+
+                $this->stockMovementRepository->create([
+                    'product_id' => $product->id,
+                    'type' => 'sale',
+                    'quantity_change' => -$quantity,
+                    'reason' => "Sale via transaction {$transaction->invoice_number}",
+                    'user_id' => $data['cashier_id'],
+                ]);
+            }
+
+            return $transaction->load(['items', 'customer', 'cashier']);
+        });
+    }
+
+    private function generateInvoiceNumber(): string
+    {
+        $prefix = 'INV-'.now()->format('Ymd').'-';
+        $todayCount = $this->transactionRepository->query()
+            ->where('invoice_number', 'like', "{$prefix}%")
+            ->count();
+
+        return $prefix.str_pad((string) ($todayCount + 1), 4, '0', STR_PAD_LEFT);
     }
 
     public function get(array $filters = [], array $with = [])

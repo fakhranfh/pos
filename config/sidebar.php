@@ -8,6 +8,12 @@ return [
         'active_pattern' => 'dashboard',
     ],
     [
+        'label' => 'Checkout',
+        'route' => 'checkout.index',
+        'icon' => 'point_of_sale',
+        'active_pattern' => 'checkout.*',
+    ],
+    [
         'label' => 'Categories',
         'route' => 'categories.index',
         'icon' => 'category',

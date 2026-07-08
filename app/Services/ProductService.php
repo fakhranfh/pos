@@ -47,4 +47,9 @@ class ProductService
     {
         return $this->productRepository->lowStock();
     }
+
+    public function searchAvailable(string $term = '')
+    {
+        return $this->productRepository->searchAvailable($term);
+    }
 }

@@ -60,4 +60,21 @@ class ProductRepository implements ProductRepositoryInterface
             ->whereColumn('stock', '<=', 'low_stock_threshold')
             ->get();
     }
+
+    public function searchAvailable(string $term = '')
+    {
+        return Product::query()
+            ->with('category')
+            ->where('is_active', true)
+            ->where('stock', '>', 0)
+            ->when($term !== '', function ($query) use ($term) {
+                $query->where(function ($query) use ($term) {
+                    $query->where('name', 'like', "%{$term}%")
+                        ->orWhere('sku', 'like', "%{$term}%");
+                });
+            })
+            ->orderBy('name')
+            ->limit(50)
+            ->get();
+    }
 }
