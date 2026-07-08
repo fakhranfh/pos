@@ -2,16 +2,23 @@
 
 namespace App\Services;
 
+use App\Repositories\Product\ProductRepositoryInterface;
 use App\Repositories\StockMovement\StockMovementRepositoryInterface;
 use App\Support\UserTimezone;
+use Illuminate\Support\Facades\DB;
 
 class StockMovementService
 {
     protected $stockMovementRepository;
 
-    public function __construct(StockMovementRepositoryInterface $stockMovementRepository)
-    {
+    protected $productRepository;
+
+    public function __construct(
+        StockMovementRepositoryInterface $stockMovementRepository,
+        ProductRepositoryInterface $productRepository,
+    ) {
         $this->stockMovementRepository = $stockMovementRepository;
+        $this->productRepository = $productRepository;
     }
 
     public function get(array $filters = [], array $with = [], ?string $sort = null, string $direction = 'asc')
@@ -31,7 +38,11 @@ class StockMovementService
 
     public function create(array $data)
     {
-        return $this->stockMovementRepository->create($data);
+        return DB::transaction(function () use ($data) {
+            $this->productRepository->adjustStock($data['product_id'], $data['quantity_change']);
+
+            return $this->stockMovementRepository->create($data);
+        });
     }
 
     public function update($id, array $data)

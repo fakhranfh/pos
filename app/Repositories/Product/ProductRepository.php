@@ -4,6 +4,7 @@ namespace App\Repositories\Product;
 
 use App\Models\Product;
 use App\Repositories\Concerns\Sortable;
+use Illuminate\Validation\ValidationException;
 
 class ProductRepository implements ProductRepositoryInterface
 {
@@ -59,6 +60,21 @@ class ProductRepository implements ProductRepositoryInterface
     public function delete($id)
     {
         return Product::destroy($id);
+    }
+
+    public function adjustStock($id, int $delta)
+    {
+        $product = Product::whereKey($id)->lockForUpdate()->firstOrFail();
+
+        if ($product->stock + $delta < 0) {
+            throw ValidationException::withMessages([
+                'quantity_change' => "Insufficient stock for {$product->name}.",
+            ]);
+        }
+
+        $product->increment('stock', $delta);
+
+        return $product;
     }
 
     public function lowStock()

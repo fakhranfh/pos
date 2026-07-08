@@ -18,6 +18,8 @@ interface ProductRepositoryInterface
 
     public function delete($id);
 
+    public function adjustStock($id, int $delta);
+
     public function lowStock();
 
     public function searchAvailable(string $term = '');
