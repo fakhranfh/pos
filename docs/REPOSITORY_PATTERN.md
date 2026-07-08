@@ -1036,7 +1036,81 @@ public function __construct(ProductRepository $repository)
 }
 ```
 
-### 7. Add Custom Repository Methods
+### 7. A Repository Must Only Touch Its Own Model
+
+A repository is scoped to exactly one entity. It must never call, query, or update another model directly — that is cross-entity orchestration and belongs in the Service layer.
+
+```php
+// ❌ AVOID - StockMovementRepository reaching into Product
+class StockMovementRepository implements StockMovementRepositoryInterface
+{
+    public function create(array $data)
+    {
+        // Wrong layer: this repository owns StockMovement, not Product
+        $product = Product::whereKey($data['product_id'])->lockForUpdate()->firstOrFail();
+        $product->increment('stock', $data['quantity_change']);
+
+        return StockMovement::create($data);
+    }
+}
+```
+
+```php
+// ✅ GOOD - each repository only touches its own model
+class ProductRepository implements ProductRepositoryInterface
+{
+    public function adjustStock($id, int $delta)
+    {
+        $product = Product::whereKey($id)->lockForUpdate()->firstOrFail();
+
+        if ($product->stock + $delta < 0) {
+            throw ValidationException::withMessages([
+                'quantity_change' => "Insufficient stock for {$product->name}.",
+            ]);
+        }
+
+        $product->increment('stock', $delta);
+
+        return $product;
+    }
+}
+
+class StockMovementRepository implements StockMovementRepositoryInterface
+{
+    public function create(array $data)
+    {
+        return StockMovement::create($data);
+    }
+}
+
+// Orchestration across repositories belongs in the Service layer
+class StockMovementService
+{
+    protected $stockMovementRepository;
+    protected $productRepository;
+
+    public function __construct(
+        StockMovementRepositoryInterface $stockMovementRepository,
+        ProductRepositoryInterface $productRepository,
+    ) {
+        $this->stockMovementRepository = $stockMovementRepository;
+        $this->productRepository = $productRepository;
+    }
+
+    public function create(array $data)
+    {
+        return DB::transaction(function () use ($data) {
+            $this->productRepository->adjustStock($data['product_id'], $data['quantity_change']);
+
+            return $this->stockMovementRepository->create($data);
+        });
+    }
+}
+```
+
+**Why:** keeps each repository's responsibility limited to one Eloquent model, keeps data-consistency logic (locking, transactions, validation across entities) in one place, and avoids repositories silently depending on each other's tables.
+
+### 8. Add Custom Repository Methods
 
 ```php
 // Interface
