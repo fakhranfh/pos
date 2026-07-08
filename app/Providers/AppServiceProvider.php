@@ -4,11 +4,24 @@ namespace App\Providers;
 
 use App\Http\Responses\CustomAuthenticatedSessionResponse;
 use App\Http\Responses\CustomVerifyEmailViewResponse;
+use App\Repositories\Category\CategoryRepository;
+use App\Repositories\Category\CategoryRepositoryInterface;
+use App\Repositories\Customer\CustomerRepository;
+use App\Repositories\Customer\CustomerRepositoryInterface;
+use App\Repositories\Product\ProductRepository;
+use App\Repositories\Product\ProductRepositoryInterface;
+use App\Repositories\StockMovement\StockMovementRepository;
+use App\Repositories\StockMovement\StockMovementRepositoryInterface;
+use App\Repositories\Transaction\TransactionRepository;
+use App\Repositories\Transaction\TransactionRepositoryInterface;
+use App\Repositories\TransactionItem\TransactionItemRepository;
+use App\Repositories\TransactionItem\TransactionItemRepositoryInterface;
 use App\Repositories\User\UserRepository;
 use App\Repositories\User\UserRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Contracts\LoginResponse;
 use Laravel\Fortify\Contracts\VerifyEmailViewResponse;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -25,6 +38,12 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
+        $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
+        $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
+        $this->app->bind(CustomerRepositoryInterface::class, CustomerRepository::class);
+        $this->app->bind(StockMovementRepositoryInterface::class, StockMovementRepository::class);
+        $this->app->bind(TransactionRepositoryInterface::class, TransactionRepository::class);
+        $this->app->bind(TransactionItemRepositoryInterface::class, TransactionItemRepository::class);
     }
 
     /**
