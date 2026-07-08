@@ -13,6 +13,7 @@ This document explains how to use each feature of the application from an end-us
 7. [Edit Profile](#7-edit-profile)
 8. [Change Password](#8-change-password)
 9. [Logging Out](#9-logging-out)
+10. [Checkout (Point of Sale)](#10-checkout-point-of-sale)
 
 ---
 
@@ -265,6 +266,68 @@ Click **Logout** from the navbar (top-right corner) or sidebar.
 - The session is terminated immediately
 - You are redirected to the login page
 - Protected routes (`/dashboard`, `/edit-profile`, etc.) are inaccessible until you log in again
+
+---
+
+## 10. Checkout (Point of Sale)
+
+Accessible at `/checkout` from the sidebar — this is the cashier's main screen for processing a sale. Requires authentication.
+
+### Screen Layout
+
+| Area | Contents |
+|---|---|
+| **Left panel** | Search box + a grid of available products |
+| **Right panel** | Cart, totals, customer, payment, and the **Pay** button |
+
+### Searching and Adding Products
+
+1. Type a product **name or SKU** in the search box (a barcode scanner acting as a keyboard also works — scan then it searches automatically)
+2. Matching products appear as cards showing name, SKU, price, and current stock
+3. Only **active** products with **stock greater than 0** are shown
+4. Click a product card to add **1 unit** to the cart
+5. Clicking a product already in the cart increases its quantity instead of adding a duplicate line
+
+### Managing the Cart
+
+Each cart line has:
+
+- **`-` / `+`** buttons to decrease/increase quantity
+- A **×** button to remove the line entirely
+- Reducing quantity to 0 removes the line automatically
+
+**Stock limit:** you cannot add or increase quantity beyond the product's available stock. Attempting to do so shows an inline message, e.g. *"Only 3 unit(s) of Iced Coffee available."*, and the quantity is not changed.
+
+### Applying a Discount
+
+Enter an amount in the **Discount** field (cart-level, fixed amount). The **Total** updates immediately. The discount is automatically capped so the total never goes below zero.
+
+### Choosing a Customer (Optional)
+
+Use the **Customer** dropdown to attach an existing customer to the sale, or leave it as **Walk-in** to complete the sale without one.
+
+### Payment
+
+1. Choose a **Payment Method**: Cash or Other
+2. Enter the **Amount Tendered**
+3. **Change Due** is calculated and displayed automatically
+4. Click **Pay**
+
+### Validation Before Payment Completes
+
+| Condition | What happens |
+|---|---|
+| Cart is empty | Error: "Add at least one product to the cart." — payment is blocked |
+| Amount tendered < Total | Error: "Amount tendered must be at least the total due." — payment is blocked |
+| Requested quantity exceeds current stock (e.g. changed by another cashier) | Error naming the product and available quantity — payment is blocked, nothing is charged |
+
+All of these show as an inline red message above the cart; no page reload occurs and the cart is preserved so you can correct it and retry.
+
+### After a Successful Payment
+
+1. You are taken to the **Receipt** page showing the invoice number, cashier, customer, line items, subtotal, discount, total, amount paid, and change
+2. Product stock is deducted automatically for each item sold
+3. Click **Print** to print the receipt, or **New Sale** to return to the checkout screen for the next customer
 
 ---
 
