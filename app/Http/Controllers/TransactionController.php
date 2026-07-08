@@ -44,8 +44,6 @@ class TransactionController extends Controller
                 'created_at' => $item->created_at?->format('Y-m-d H:i:s') ?? '',
                 'actions' => [
                     'show' => route('transactions.show', $item->id),
-                    'edit' => route('transactions.edit', $item->id),
-                    'delete' => route('transactions.destroy', $item->id),
                 ],
             ])->toArray(),
         ]);

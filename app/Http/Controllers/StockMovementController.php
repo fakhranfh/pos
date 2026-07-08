@@ -49,8 +49,6 @@ class StockMovementController extends Controller
                 'created_at' => $item->created_at?->format('Y-m-d H:i:s') ?? '',
                 'actions' => [
                     'show' => route('stock-movements.show', $item->id),
-                    'edit' => route('stock-movements.edit', $item->id),
-                    'delete' => route('stock-movements.destroy', $item->id),
                 ],
             ])->toArray(),
         ]);
