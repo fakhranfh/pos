@@ -39,7 +39,7 @@ class StockMovementController extends Controller
     public function list(Request $request)
     {
         $filters = $request->only(['type', 'quantity_change', 'created_from', 'created_to']);
-        $items = $this->stockMovementService->get($filters);
+        $items = $this->stockMovementService->get($filters, [], $request->query('sort'), $request->query('direction', 'asc'));
 
         return response()->json([
             'data' => $items->map(fn ($item) => [

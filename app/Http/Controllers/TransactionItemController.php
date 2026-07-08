@@ -43,7 +43,7 @@ class TransactionItemController extends Controller
     public function list(Request $request)
     {
         $filters = $request->only(['product_name', 'created_from', 'created_to']);
-        $items = $this->transactionItemService->get($filters);
+        $items = $this->transactionItemService->get($filters, [], $request->query('sort'), $request->query('direction', 'asc'));
 
         return response()->json([
             'data' => $items->map(fn ($item) => [

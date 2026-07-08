@@ -49,10 +49,10 @@
                 ['key' => 'created', 'label' => 'Created', 'type' => 'datetime'],
             ]">
             <x-slot name="headers">
-                <th class="px-6 py-3 text-left font-semibold">{{ __('ID') }}</th>
-                <th class="px-6 py-3 text-left font-semibold">{{ __('Sku') }}</th>
-                <th class="px-6 py-3 text-left font-semibold">{{ __('Name') }}</th>
-                <th class="px-6 py-3 text-left font-semibold">{{ __('Created') }}</th>
+                <x-th-sort sortKey="id">{{ __('ID') }}</x-th-sort>
+                <x-th-sort sortKey="sku">{{ __('Sku') }}</x-th-sort>
+                <x-th-sort sortKey="name">{{ __('Name') }}</x-th-sort>
+                <x-th-sort sortKey="created_at">{{ __('Created') }}</x-th-sort>
                 <th class="px-6 py-3 text-right font-semibold">{{ __('Actions') }}</th>
             </x-slot>
         </x-data-table>

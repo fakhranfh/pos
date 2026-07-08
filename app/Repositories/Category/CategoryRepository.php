@@ -3,9 +3,14 @@
 namespace App\Repositories\Category;
 
 use App\Models\Category;
+use App\Repositories\Concerns\Sortable;
 
 class CategoryRepository implements CategoryRepositoryInterface
 {
+    use Sortable;
+
+    protected array $sortable = ['id', 'name', 'created_at'];
+
     public function query(array $filters = [])
     {
         $query = Category::query();
@@ -21,9 +26,11 @@ class CategoryRepository implements CategoryRepositoryInterface
         return $query;
     }
 
-    public function get(array $filters = [], array $with = [])
+    public function get(array $filters = [], array $with = [], ?string $sort = null, string $direction = 'asc')
     {
-        return $this->query($filters)->with($with)->get();
+        $query = $this->applySort($this->query($filters), $sort, $direction, $this->sortable);
+
+        return $query->with($with)->get();
     }
 
     public function getAll()

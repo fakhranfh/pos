@@ -6,7 +6,7 @@ interface CategoryRepositoryInterface
 {
     public function query(array $filters = []);
 
-    public function get(array $filters = [], array $with = []);
+    public function get(array $filters = [], array $with = [], ?string $sort = null, string $direction = 'asc');
 
     public function getAll();
 

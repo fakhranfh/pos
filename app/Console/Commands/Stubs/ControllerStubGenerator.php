@@ -62,7 +62,7 @@ class {$name}Controller extends Controller
     public function list(Request \$request)
     {
         \$filters = \$request->only([{$filterOnlyKeys}]);
-        \$items = \$this->{$camelCaseName}Service->get(\$filters);
+        \$items = \$this->{$camelCaseName}Service->get(\$filters, [], \$request->query('sort'), \$request->query('direction', 'asc'));
 
         return response()->json([
             'data' => \$items->map(fn(\$item) => [

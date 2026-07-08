@@ -14,9 +14,9 @@ class CategoryService
         $this->categoryRepository = $categoryRepository;
     }
 
-    public function get(array $filters = [], array $with = [])
+    public function get(array $filters = [], array $with = [], ?string $sort = null, string $direction = 'asc')
     {
-        return UserTimezone::apply($this->categoryRepository->get($filters, $with));
+        return UserTimezone::apply($this->categoryRepository->get($filters, $with, $sort, $direction));
     }
 
     public function getAll()

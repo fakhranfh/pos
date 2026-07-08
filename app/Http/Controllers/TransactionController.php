@@ -33,7 +33,7 @@ class TransactionController extends Controller
     public function list(Request $request)
     {
         $filters = $request->only(['invoice_number', 'payment_method', 'status', 'created_from', 'created_to']);
-        $items = $this->transactionService->get($filters);
+        $items = $this->transactionService->get($filters, [], $request->query('sort'), $request->query('direction', 'asc'));
 
         return response()->json([
             'data' => $items->map(fn ($item) => [

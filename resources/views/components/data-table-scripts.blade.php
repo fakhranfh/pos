@@ -1,5 +1,21 @@
 @push('scripts')
 <script>
+// Build placeholder skeleton rows shown while a table's data is loading
+function buildSkeletonRows(tableId, rows = 5) {
+    const columnCount = document.querySelectorAll(`#${tableId} thead th`).length || 1;
+    let html = '';
+
+    for (let r = 0; r < rows; r++) {
+        html += '<tr class="animate-pulse">';
+        for (let c = 0; c < columnCount; c++) {
+            html += '<td class="px-6 py-3"><div class="h-4 bg-gray-200 dark:bg-gray-600 rounded"></div></td>';
+        }
+        html += '</tr>';
+    }
+
+    return html;
+}
+
 // Load data for table
 function loadTableData(tableId, listUrl, renderCallback) {
     const tbody = document.querySelector(`#${tableId} tbody`);
@@ -7,6 +23,8 @@ function loadTableData(tableId, listUrl, renderCallback) {
         console.error(`Table with id ${tableId} not found`);
         return;
     }
+
+    tbody.innerHTML = buildSkeletonRows(tableId);
 
     fetch(listUrl, { credentials: 'include' })
         .then(r => r.json())
@@ -44,8 +62,42 @@ function buildFilterUrl(tableId) {
         }
     });
 
+    const sortState = window.__tableSort && window.__tableSort[tableId];
+    if (sortState) {
+        params.set('sort', sortState.key);
+        params.set('direction', sortState.direction);
+    }
+
     const qs = params.toString();
     return baseUrl + (qs ? '?' + qs : '');
+}
+
+// Sort state per table: { [tableId]: { key, direction } }
+window.__tableSort = window.__tableSort || {};
+
+function toggleSort(th) {
+    const table = th.closest('table');
+    if (!table) {
+        return;
+    }
+
+    const tableId = table.id;
+    const key = th.dataset.sortKey;
+    const current = window.__tableSort[tableId];
+    const direction = current && current.key === key && current.direction === 'asc' ? 'desc' : 'asc';
+
+    window.__tableSort[tableId] = { key, direction };
+
+    table.querySelectorAll('[data-sort-key] .sort-indicator').forEach(indicator => {
+        indicator.textContent = '↕';
+    });
+
+    const indicator = th.querySelector('.sort-indicator');
+    if (indicator) {
+        indicator.textContent = direction === 'asc' ? '↑' : '↓';
+    }
+
+    applyFilters(tableId);
 }
 
 function applyFilters(tableId) {

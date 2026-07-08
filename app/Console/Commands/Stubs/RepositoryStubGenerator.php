@@ -7,6 +7,7 @@ class RepositoryStubGenerator
     public function generate(string $name, array $filterDefinitions = []): string
     {
         $filterConditions = $this->buildFilterConditions($filterDefinitions);
+        $sortable = $this->buildSortableArray($filterDefinitions);
 
         return <<<PHP
 <?php
@@ -14,9 +15,14 @@ class RepositoryStubGenerator
 namespace App\Repositories\\{$name};
 
 use App\Models\\{$name};
+use App\Repositories\Concerns\Sortable;
 
 class {$name}Repository implements {$name}RepositoryInterface
 {
+    use Sortable;
+
+    protected array \$sortable = [{$sortable}];
+
     public function query(array \$filters = [])
     {
         \$query = {$name}::query();
@@ -26,9 +32,9 @@ class {$name}Repository implements {$name}RepositoryInterface
         return \$query;
     }
 
-    public function get(array \$filters = [], array \$with = [])
+    public function get(array \$filters = [], array \$with = [], ?string \$sort = null, string \$direction = 'asc')
     {
-        \$query = \$this->query(\$filters);
+        \$query = \$this->applySort(\$this->query(\$filters), \$sort, \$direction, \$this->sortable);
 
         return \$query->with(\$with)->get();
     }
@@ -82,5 +88,23 @@ PHP;
         }
 
         return implode("\n\n", $lines);
+    }
+
+    private function buildSortableArray(array $filterDefinitions): string
+    {
+        $columns = ['id'];
+
+        foreach ($filterDefinitions as $filter) {
+            $key = $filter['key'];
+            $dbColumn = $key === 'created' ? 'created_at' : $key;
+
+            if ($filter['type'] !== 'datetime' && ! in_array($dbColumn, $columns, true)) {
+                $columns[] = $dbColumn;
+            }
+        }
+
+        $columns[] = 'created_at';
+
+        return implode(', ', array_map(fn ($column) => "'{$column}'", $columns));
     }
 }

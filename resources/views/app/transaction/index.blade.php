@@ -50,11 +50,11 @@
                 ['key' => 'created', 'label' => 'Created', 'type' => 'datetime'],
             ]">
             <x-slot name="headers">
-                <th class="px-6 py-3 text-left font-semibold">{{ __('ID') }}</th>
-                <th class="px-6 py-3 text-left font-semibold">{{ __('Invoice Number') }}</th>
-                <th class="px-6 py-3 text-left font-semibold">{{ __('Payment Method') }}</th>
-                <th class="px-6 py-3 text-left font-semibold">{{ __('Status') }}</th>
-                <th class="px-6 py-3 text-left font-semibold">{{ __('Created') }}</th>
+                <x-th-sort sortKey="id">{{ __('ID') }}</x-th-sort>
+                <x-th-sort sortKey="invoice_number">{{ __('Invoice Number') }}</x-th-sort>
+                <x-th-sort sortKey="payment_method">{{ __('Payment Method') }}</x-th-sort>
+                <x-th-sort sortKey="status">{{ __('Status') }}</x-th-sort>
+                <x-th-sort sortKey="created_at">{{ __('Created') }}</x-th-sort>
                 <th class="px-6 py-3 text-right font-semibold">{{ __('Actions') }}</th>
             </x-slot>
         </x-data-table>

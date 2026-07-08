@@ -116,9 +116,9 @@ class TransactionService
         return $prefix.str_pad((string) ($todayCount + 1), 4, '0', STR_PAD_LEFT);
     }
 
-    public function get(array $filters = [], array $with = [])
+    public function get(array $filters = [], array $with = [], ?string $sort = null, string $direction = 'asc')
     {
-        return UserTimezone::apply($this->transactionRepository->get($filters, $with));
+        return UserTimezone::apply($this->transactionRepository->get($filters, $with, $sort, $direction));
     }
 
     public function getAll()

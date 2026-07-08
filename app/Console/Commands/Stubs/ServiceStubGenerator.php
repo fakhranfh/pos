@@ -27,9 +27,9 @@ class {$name}Service
         \$this->{$camelCaseName}Repository = \${$camelCaseName}Repository;
     }
 
-    public function get(array \$filters = [], array \$with = [])
+    public function get(array \$filters = [], array \$with = [], ?string \$sort = null, string \$direction = 'asc')
     {
-        return \$this->{$camelCaseName}Repository->get(\$filters, \$with);
+        return \$this->{$camelCaseName}Repository->get(\$filters, \$with, \$sort, \$direction);
     }
 
     public function getAll()

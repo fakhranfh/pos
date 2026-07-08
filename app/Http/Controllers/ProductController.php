@@ -37,7 +37,7 @@ class ProductController extends Controller
     public function list(Request $request)
     {
         $filters = $request->only(['sku', 'name', 'created_from', 'created_to']);
-        $items = $this->productService->get($filters);
+        $items = $this->productService->get($filters, [], $request->query('sort'), $request->query('direction', 'asc'));
 
         return response()->json([
             'data' => $items->map(fn ($item) => [

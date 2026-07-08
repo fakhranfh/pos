@@ -3,9 +3,14 @@
 namespace App\Repositories\StockMovement;
 
 use App\Models\StockMovement;
+use App\Repositories\Concerns\Sortable;
 
 class StockMovementRepository implements StockMovementRepositoryInterface
 {
+    use Sortable;
+
+    protected array $sortable = ['id', 'type', 'quantity_change', 'created_at'];
+
     public function query(array $filters = [])
     {
         $query = StockMovement::query();
@@ -21,9 +26,11 @@ class StockMovementRepository implements StockMovementRepositoryInterface
         return $query;
     }
 
-    public function get(array $filters = [], array $with = [])
+    public function get(array $filters = [], array $with = [], ?string $sort = null, string $direction = 'asc')
     {
-        return $this->query($filters)->with($with)->get();
+        $query = $this->applySort($this->query($filters), $sort, $direction, $this->sortable);
+
+        return $query->with($with)->get();
     }
 
     public function getAll()

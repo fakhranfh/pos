@@ -14,9 +14,9 @@ class TransactionItemService
         $this->transactionItemRepository = $transactionItemRepository;
     }
 
-    public function get(array $filters = [], array $with = [])
+    public function get(array $filters = [], array $with = [], ?string $sort = null, string $direction = 'asc')
     {
-        return UserTimezone::apply($this->transactionItemRepository->get($filters, $with));
+        return UserTimezone::apply($this->transactionItemRepository->get($filters, $with, $sort, $direction));
     }
 
     public function getAll()

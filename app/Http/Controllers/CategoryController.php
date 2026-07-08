@@ -32,7 +32,7 @@ class CategoryController extends Controller
     public function list(Request $request)
     {
         $filters = $request->only(['name', 'created_from', 'created_to']);
-        $items = $this->categoryService->get($filters);
+        $items = $this->categoryService->get($filters, [], $request->query('sort'), $request->query('direction', 'asc'));
 
         return response()->json([
             'data' => $items->map(fn ($item) => [

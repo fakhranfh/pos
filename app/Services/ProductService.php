@@ -14,9 +14,9 @@ class ProductService
         $this->productRepository = $productRepository;
     }
 
-    public function get(array $filters = [], array $with = [])
+    public function get(array $filters = [], array $with = [], ?string $sort = null, string $direction = 'asc')
     {
-        return UserTimezone::apply($this->productRepository->get($filters, $with));
+        return UserTimezone::apply($this->productRepository->get($filters, $with, $sort, $direction));
     }
 
     public function getAll()

@@ -65,7 +65,7 @@ class TailwindBladeIndexStubGenerator
 {$filtersArray}
             ]">
             <x-slot name="headers">
-                <th class="px-6 py-3 text-left font-semibold">{{ __('ID') }}</th>
+                <x-th-sort sortKey="id">{{ __('ID') }}</x-th-sort>
 {$tableHeaders}
                 <th class="px-6 py-3 text-right font-semibold">{{ __('Actions') }}</th>
             </x-slot>
@@ -125,9 +125,9 @@ BLADE;
 
         foreach ($filterDefinitions as $filter) {
             if ($filter['key'] === 'created' && $filter['type'] === 'datetime') {
-                $lines[] = "                <th class=\"px-6 py-3 text-left font-semibold\">{{ __('{$filter['label']}') }}</th>";
+                $lines[] = "                <x-th-sort sortKey=\"created_at\">{{ __('{$filter['label']}') }}</x-th-sort>";
             } elseif ($filter['type'] !== 'datetime') {
-                $lines[] = "                <th class=\"px-6 py-3 text-left font-semibold\">{{ __('{$filter['label']}') }}</th>";
+                $lines[] = "                <x-th-sort sortKey=\"{$filter['key']}\">{{ __('{$filter['label']}') }}</x-th-sort>";
             }
         }
 
