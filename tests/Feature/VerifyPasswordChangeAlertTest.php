@@ -30,12 +30,6 @@ test('password change page shows success alert after update', function () {
     // The follow response should contain the success alert
     $html = $followResponse->getContent();
 
-    // Save HTML to file for inspection
-    file_put_contents(
-        storage_path('password-change-success.html'),
-        $html
-    );
-
     // Verify alert component is in the HTML
     expect($html)->toContain('success-alert');
     expect($html)->toContain('Success');
