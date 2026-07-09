@@ -84,7 +84,7 @@ class ProductRepository implements ProductRepositoryInterface
             ->get();
     }
 
-    public function searchAvailable(string $term = '')
+    public function searchAvailable(string $term = '', int $perPage = 20)
     {
         return Product::query()
             ->with('category')
@@ -97,7 +97,6 @@ class ProductRepository implements ProductRepositoryInterface
                 });
             })
             ->orderBy('name')
-            ->limit(50)
-            ->get();
+            ->simplePaginate($perPage);
     }
 }

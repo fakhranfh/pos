@@ -19,11 +19,7 @@
                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-lg py-3 px-4"
             />
 
-            <div id="productGrid" class="mt-4 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[65vh] overflow-y-auto">
-                <p id="productEmptyState" class="col-span-full text-center text-gray-500 dark:text-gray-400 py-8">
-                    {{ __('Loading products...') }}
-                </p>
-            </div>
+            <div id="productGrid" class="mt-4 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[65vh] overflow-y-auto"></div>
         </div>
     </div>
 
@@ -113,29 +109,91 @@
 
     let cart = [];
     let searchTimer = null;
+    let currentTerm = '';
+    let nextPage = 1;
+    let isLoading = false;
+    let hasMore = true;
+    const skeletonClass = 'product-skeleton';
 
     function formatCurrency(value) {
         return 'Rp ' + Number(value || 0).toLocaleString('id-ID', { maximumFractionDigits: 0 });
     }
 
+    function skeletonCardHtml() {
+        return `
+            <div class="${skeletonClass} animate-pulse bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-3">
+                <div class="w-full h-24 bg-gray-200 dark:bg-gray-600 rounded mb-2"></div>
+                <div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-3/4 mb-2"></div>
+                <div class="h-2 bg-gray-200 dark:bg-gray-600 rounded w-1/2 mb-2"></div>
+                <div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-1/3 mb-2"></div>
+                <div class="h-2 bg-gray-200 dark:bg-gray-600 rounded w-1/4"></div>
+            </div>
+        `;
+    }
+
+    function renderSkeleton(count = 8) {
+        productGrid.innerHTML = Array.from({ length: count }).map(skeletonCardHtml).join('');
+    }
+
+    function appendSkeleton(count = 4) {
+        productGrid.insertAdjacentHTML('beforeend', Array.from({ length: count }).map(skeletonCardHtml).join(''));
+    }
+
+    function removeSkeletons() {
+        productGrid.querySelectorAll(`.${skeletonClass}`).forEach((el) => el.remove());
+    }
+
     function fetchProducts(term) {
-        fetch(`${searchUrl}?q=${encodeURIComponent(term)}`)
+        currentTerm = term;
+        nextPage = 1;
+        hasMore = true;
+        renderSkeleton();
+        loadPage({ replace: true });
+    }
+
+    function loadMore() {
+        if (isLoading || !hasMore) {
+            return;
+        }
+        appendSkeleton();
+        loadPage({ replace: false });
+    }
+
+    function loadPage({ replace }) {
+        isLoading = true;
+
+        fetch(`${searchUrl}?q=${encodeURIComponent(currentTerm)}&page=${nextPage}`)
             .then((res) => res.json())
-            .then((json) => renderProducts(json.data))
+            .then((json) => {
+                removeSkeletons();
+                hasMore = Boolean(json.next_page);
+                nextPage = json.next_page || nextPage;
+                renderProducts(json.data, { replace });
+            })
             .catch(() => {
-                productGrid.innerHTML = '<p class="col-span-full text-center text-red-500 py-8">' +
-                    '{{ __('Failed to load products.') }}</p>';
+                removeSkeletons();
+                if (replace) {
+                    productGrid.innerHTML = '<p class="col-span-full text-center text-red-500 py-8">' +
+                        '{{ __('Failed to load products.') }}</p>';
+                }
+            })
+            .finally(() => {
+                isLoading = false;
             });
     }
 
-    function renderProducts(products) {
-        if (!products.length) {
+    function renderProducts(products, { replace }) {
+        if (replace && !products.length) {
             productGrid.innerHTML = '<p class="col-span-full text-center text-gray-500 dark:text-gray-400 py-8">' +
                 '{{ __('No products found') }}</p>';
             return;
         }
 
-        productGrid.innerHTML = products.map((product) => `
+        if (replace) {
+            productGrid.innerHTML = '';
+        }
+
+        const html = products.map((product) => `
             <button
                 type="button"
                 class="product-card text-left bg-gray-50 dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600 rounded-lg p-3 transition"
@@ -152,7 +210,14 @@
             </button>
         `).join('');
 
-        productGrid.querySelectorAll('.product-card').forEach((card) => {
+        productGrid.insertAdjacentHTML('beforeend', html);
+
+        products.forEach((product) => {
+            const card = productGrid.querySelector(`.product-card[data-id="${product.id}"]:not([data-bound])`);
+            if (!card) {
+                return;
+            }
+            card.setAttribute('data-bound', '1');
             card.addEventListener('click', () => addToCart({
                 id: Number(card.dataset.id),
                 name: decodeURIComponent(card.dataset.name),
@@ -271,6 +336,13 @@
         clearTimeout(searchTimer);
         const term = productSearch.value;
         searchTimer = setTimeout(() => fetchProducts(term), 250);
+    });
+
+    productGrid.addEventListener('scroll', () => {
+        const threshold = 150;
+        if (productGrid.scrollTop + productGrid.clientHeight >= productGrid.scrollHeight - threshold) {
+            loadMore();
+        }
     });
 
     payButton.addEventListener('click', () => {

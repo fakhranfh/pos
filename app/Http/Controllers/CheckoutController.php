@@ -29,7 +29,7 @@ class CheckoutController extends Controller
 
     public function search(Request $request)
     {
-        $products = $this->productService->searchAvailable((string) $request->query('q', ''));
+        $products = $this->productService->searchAvailable((string) $request->query('q', ''), 10);
 
         return response()->json([
             'data' => $products->map(fn ($product) => [
@@ -40,7 +40,8 @@ class CheckoutController extends Controller
                 'stock' => $product->stock,
                 'category' => $product->category->name ?? null,
                 'image_url' => $product->image_url,
-            ]),
+            ])->values(),
+            'next_page' => $products->hasMorePages() ? $products->currentPage() + 1 : null,
         ]);
     }
 

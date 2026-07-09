@@ -49,8 +49,8 @@ class ProductService
         return $this->productRepository->lowStock();
     }
 
-    public function searchAvailable(string $term = '')
+    public function searchAvailable(string $term = '', int $perPage = 20)
     {
-        return $this->productRepository->searchAvailable($term);
+        return $this->productRepository->searchAvailable($term, $perPage);
     }
 }
