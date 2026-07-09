@@ -186,7 +186,28 @@ interface StockMovement {
   userId: string;             // who performed it
   createdAt: string;
 }
+```
 
+### Stock Movement Types Explained
+
+StockMovement records track every change to product inventory and create an immutable audit trail. The `type` field determines the reason for the movement:
+
+| Type | Description | Quantity Change | When Used | Reason Required |
+|------|-------------|-----------------|-----------|-----------------|
+| **sale** | Product sold via checkout | Negative | Cashier completes a transaction | No |
+| **stock_in** | Inventory received from supplier/warehouse | Positive | Admin receives new stock | No |
+| **adjustment** | Manual inventory correction | Positive or Negative | Discrepancy discovered during physical count or damage found | Yes |
+| **return** | Transaction voided/refunded, items restocked | Positive | Admin voids a completed transaction | No |
+
+**Examples:**
+- Customer buys 5 units → creates StockMovement `type: 'sale'`, `quantity_change: -5`
+- Receive 20 units from supplier → creates StockMovement `type: 'stock_in'`, `quantity_change: +20`
+- Stocktaking finds 3 units missing → creates StockMovement `type: 'adjustment'`, `quantity_change: -3`, `reason: "Damaged units found during inventory"`
+- Cashier voids a sale of 2 units → creates StockMovement `type: 'return'`, `quantity_change: +2`
+
+All movements update the Product's `stock` field atomically and provide full traceability for inventory audits and investigations.
+
+```typescript
 interface Transaction {
   id: string;
   invoiceNumber: string;      // human-readable, sequential
