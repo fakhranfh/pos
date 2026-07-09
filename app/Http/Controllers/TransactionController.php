@@ -42,7 +42,7 @@ class TransactionController extends Controller
             'id' => $item->id ?? '',
             'invoice_number' => $item->invoice_number ?? '',
             'payment_method' => $item->payment_method?->label() ?? '',
-            'status' => $item->status ?? '',
+            'status' => $item->status?->label() ?? '',
             'created_at' => $item->formatted_created_at ?? '',
             'actions' => [
                 'show' => route('transactions.show', $item->id),

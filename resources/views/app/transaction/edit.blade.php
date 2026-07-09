@@ -138,8 +138,8 @@
           <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">@lang('Status')</label>
           <select id="status" name="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
             <option value="">-- @lang('Select') --</option>
-            <option value="completed" {{ old('status', $item->status) === 'completed' ? 'selected' : '' }}>@lang('Completed')</option>
-            <option value="voided" {{ old('status', $item->status) === 'voided' ? 'selected' : '' }}>@lang('Voided')</option>
+            <option value="completed" {{ old('status', $item->status?->value) === 'completed' ? 'selected' : '' }}>@lang('Completed')</option>
+            <option value="voided" {{ old('status', $item->status?->value) === 'voided' ? 'selected' : '' }}>@lang('Voided')</option>
           </select>
           @error('status')
             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>

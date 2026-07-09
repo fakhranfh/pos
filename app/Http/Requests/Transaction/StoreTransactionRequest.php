@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Transaction;
 
 use App\Enums\PaymentMethod;
+use App\Enums\TransactionStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -25,7 +26,7 @@ class StoreTransactionRequest extends FormRequest
             'amount_tendered' => 'required|numeric|min:0',
             'change_due' => 'required|numeric|min:0',
             'payment_method' => ['required', Rule::enum(PaymentMethod::class)],
-            'status' => 'required|in:completed,voided',
+            'status' => ['required', Rule::enum(TransactionStatus::class)],
         ];
     }
 }

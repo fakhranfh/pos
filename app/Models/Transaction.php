@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PaymentMethod;
+use App\Enums\TransactionStatus;
 use App\Models\Concerns\HasFormattedTimestamps;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -29,6 +30,7 @@ class Transaction extends Model
     {
         return [
             'payment_method' => PaymentMethod::class,
+            'status' => TransactionStatus::class,
             'subtotal' => 'decimal:2',
             'discount_amount' => 'decimal:2',
             'tax_amount' => 'decimal:2',
