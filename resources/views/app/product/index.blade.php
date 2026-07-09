@@ -44,12 +44,12 @@
             tableId="productsTable"
             listUrl="{{ route('products.list') }}"
             :filters="[
-                ['key' => 'sku', 'label' => 'Sku', 'type' => 'text'],
+                ['key' => 'sku', 'label' => 'SKU', 'type' => 'text'],
                 ['key' => 'name', 'label' => 'Name', 'type' => 'text'],
                 ['key' => 'created', 'label' => 'Created', 'type' => 'datetime'],
             ]">
             <x-slot name="headers">
-                <x-th-sort sortKey="sku">{{ __('Sku') }}</x-th-sort>
+                <x-th-sort sortKey="sku">{{ __('SKU') }}</x-th-sort>
                 <x-th-sort sortKey="name">{{ __('Name') }}</x-th-sort>
                 <th class="px-6 py-3 text-left font-semibold">{{ __('Category') }}</th>
                 <x-th-sort sortKey="price">{{ __('Price') }}</x-th-sort>
