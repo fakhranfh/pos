@@ -50,7 +50,7 @@
                     </thead>
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                         @foreach ($items as $item)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <tr id="product-row-{{ $item->id }}" class="hover:bg-gray-50 dark:hover:bg-gray-700 {{ (string) request('highlight') === (string) $item->id ? 'bg-yellow-100 dark:bg-yellow-900/40' : '' }}">
                                 <td class="px-6 py-3">{{ $item->sku }}</td>
                                 <td class="px-6 py-3">{{ $item->name }}</td>
                                 <td class="px-6 py-3">
@@ -77,4 +77,15 @@
         </div>
     </div>
 </div>
+
+@if (request('highlight'))
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const row = document.getElementById('product-row-{{ request('highlight') }}');
+    if (row) {
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+});
+</script>
+@endif
 @endsection

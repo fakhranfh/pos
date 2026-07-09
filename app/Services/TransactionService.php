@@ -3,11 +3,14 @@
 namespace App\Services;
 
 use App\Models\Product;
+use App\Models\User;
+use App\Notifications\LowStockAlert;
 use App\Repositories\StockMovement\StockMovementRepositoryInterface;
 use App\Repositories\Transaction\TransactionRepositoryInterface;
 use App\Repositories\TransactionItem\TransactionItemRepositoryInterface;
 use App\Support\UserTimezone;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 
 class TransactionService
@@ -100,6 +103,10 @@ class TransactionService
                     'reason' => "Sale via transaction {$transaction->invoice_number}",
                     'user_id' => $data['cashier_id'],
                 ]);
+
+                if ($product->stock <= $product->low_stock_threshold) {
+                    Notification::send(User::all(), new LowStockAlert($product));
+                }
             }
 
             return $transaction->load(['items', 'cashier']);

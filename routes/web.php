@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StockMovementController;
@@ -25,6 +26,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('/change-password', 'change-password')->name('change-password');
 
     Route::view('/dashboard', 'dashboard')->name('dashboard');
+
+    Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
+    Route::get('notifications/data/list', [NotificationController::class, 'list'])->name('notifications.list');
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
 
     Route::get('checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::get('checkout/products', [CheckoutController::class, 'search'])->name('checkout.products');
