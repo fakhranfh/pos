@@ -1,13 +1,17 @@
-# POS — Point of Sale
+<p align="center">
+  <img src="public/logo.png" alt="POS logo" width="96">
+</p>
 
-A web-based Point of Sale application built on Laravel 13, designed for small-to-medium retail and F&B businesses that need a fast, reliable way to record sales, manage inventory, and track daily revenue.
+<h1 align="center">POS — Point of Sale</h1>
 
-The core module lets cashiers run a register-style checkout (search/add products, apply discounts, take payment, calculate change) while admins manage the product catalog, stock, and sales reports — all without leaving the browser.
+<p align="center">A web-based Point of Sale application built on Laravel 13 for small-to-medium retail and F&amp;B businesses.</p>
+
+Cashiers run a register-style checkout — search/add products, apply discounts, take payment, calculate change — while admins manage the product catalog, stock, and sales reports, all from the browser.
 
 > [!NOTE]
 > This project follows the Repository Pattern and CRUD generator conventions inherited from its [Laravel 13 boilerplate](https://github.com/fakhranfh/laravel-13-boilerplate) foundation. See [docs/PRD_POS_CORE_FEATURES.md](docs/PRD_POS_CORE_FEATURES.md) for the full product spec.
 
-## Tech Stack
+## Tech stack
 
 | Layer | Package | Version |
 |---|---|---|
@@ -15,10 +19,10 @@ The core module lets cashiers run a register-style checkout (search/add products
 | Framework | Laravel | v13 |
 | Auth | Laravel Fortify | v1 |
 | Testing | Pest | v4 |
-| Browser Tests | Laravel Dusk | — |
+| Browser tests | Laravel Dusk | — |
 | Frontend | Tailwind CSS | v4 |
 | Bundler | Vite | — |
-| Code Style | Laravel Pint | v1 |
+| Code style | Laravel Pint | v1 |
 
 ## Features
 
@@ -31,6 +35,21 @@ The core module lets cashiers run a register-style checkout (search/add products
 
 > [!IMPORTANT]
 > This is an MVP: single-outlet scope, cash/manual payment only (no payment gateway integration), no offline support. See [docs/PRD_POS_CORE_FEATURES.md](docs/PRD_POS_CORE_FEATURES.md#2-goals--success-metrics) for anti-goals and Phase 2 plans.
+
+## Screenshots
+
+![Dashboard](docs/dusk/images/pos/dashboard.png)
+
+| Checkout | Category list |
+|---|---|
+| ![Checkout page](docs/dusk/images/pos/checkout-page.png) | ![Category index](docs/dusk/images/pos/category-index.png) |
+
+| Transaction list | Transaction detail | Sales report |
+|---|---|---|
+| ![Transaction index](docs/dusk/images/pos/transaction-index.png) | ![Transaction show](docs/dusk/images/pos/transaction-show.png) | ![Sales report](docs/dusk/images/pos/sales-report.png) |
+
+> [!TIP]
+> These are captured automatically by the Dusk suite (see [docs/dusk/TESTING.md](docs/dusk/TESTING.md)). Run `php artisan dusk` after UI changes to refresh them.
 
 ## Architecture
 
@@ -48,7 +67,7 @@ php artisan make:rsc ModelName --label="Label"
 
 This generates the model, migration, repository, service, controller, form requests, and Blade views (index/create/edit/show) in one step. See [docs/CRUD_GENERATOR.md](docs/CRUD_GENERATOR.md) and [docs/REPOSITORY_PATTERN.md](docs/REPOSITORY_PATTERN.md) for details.
 
-## Quick Start
+## Quick start
 
 ### Prerequisites
 
@@ -75,12 +94,12 @@ composer run dev
 
 Runs the PHP server, queue listener, and Vite dev server concurrently.
 
-## Common Commands
+## Common commands
 
 ```bash
 # Development
 composer run dev              # Start all servers
-php artisan pail               # Stream logs in real-time
+php artisan pail              # Stream logs in real-time
 
 # CRUD scaffolding
 php artisan make:rsc ModelName --label="Label"

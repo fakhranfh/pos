@@ -43,8 +43,6 @@ All screenshots below are captured from an actual generated module running in th
 
 The list page uses server-side DataTables with search, sort, and pagination. The sidebar automatically shows the active "Products" item with its icon.
 
-![Product Index](dusk/images/crud/product-index.png)
-
 **Key features:**
 - Header with title and "**+ NEW PRODUCTS**" button
 - Column-aware filter UI (text, date range, enum dropdown) with Apply / Reset buttons
@@ -59,8 +57,6 @@ The list page uses server-side DataTables with search, sort, and pagination. The
 
 The create form is auto-generated from the column configuration provided during `make:rsc`. Columns with `text`, `email`, `number`, `textarea`, `select`, `radio`, and `date` types all generate the appropriate HTML input.
 
-![Product Create](dusk/images/crud/product-create.png)
-
 **Key features:**
 - Breadcrumb: `Products / Create`
 - "Fill in the form below to create a new record" subtitle
@@ -74,8 +70,6 @@ The create form is auto-generated from the column configuration provided during 
 
 The detail view displays a record's fields in a two-column layout: field values on the left, metadata and actions on the right.
 
-![Product Show](dusk/images/crud/product-show.png)
-
 **Key features:**
 - Breadcrumb: `Products / {id}`
 - "Details" card with all field values (read-only)
@@ -87,8 +81,6 @@ The detail view displays a record's fields in a two-column layout: field values 
 ### 4. Edit — `/products/{id}/edit`
 
 The edit form mirrors the create form but pre-fills fields with existing record data and shows a "Save Changes" button instead.
-
-![Product Edit](dusk/images/crud/product-edit.png)
 
 **Key features:**
 - Breadcrumb: `Products / {id} / Edit`

@@ -30,6 +30,7 @@ relevant screenshots.
 | `tests/Browser/Auth/LogoutTest.php` | Logout & Page Protection | 3 |
 | `tests/Browser/EditProfileTest.php` | Edit Profile | 5 |
 | `tests/Browser/PasswordChangeAlertTest.php` | Password Change Alert | 1 |
+| `tests/Browser/CapturePosScreenshotsTest.php` | POS screenshots (checkout, categories, transactions, reports) | 5 |
 
 ---
 
@@ -39,8 +40,6 @@ File: `tests/Browser/LandingPageTest.php`
 
 The main public page displaying a hero section, application name in navbar, and
 different navigation links for guests and authenticated users.
-
-![Landing Page](images/landing-page.png)
 
 ### Test Scenarios
 
@@ -64,11 +63,7 @@ File: `tests/Browser/Auth/RegistrationTest.php`
 New account registration with **server-side** and **client-side** password strength
 validation (JavaScript). On success, user is redirected to the email verification page.
 
-![Registration Page](images/register-page.png)
-
 Example display when password doesn't meet requirements or email is already taken:
-
-![Registration Error](images/register-error.png)
 
 ### Test Scenarios
 
@@ -99,11 +94,7 @@ File: `tests/Browser/Auth/LoginTest.php`
 Authentication of registered users. Successful login redirects to `/dashboard`,
 while incorrect credentials display an error message.
 
-![Login Page](images/login-page.png)
-
 Display when credentials are wrong:
-
-![Login Error](images/login-error.png)
 
 ### Test Scenarios
 
@@ -125,8 +116,6 @@ File: `tests/Browser/Auth/EmailVerificationTest.php`
 Users who haven't verified their email are redirected to a verification notice page
 after login. Users can resend the verification link or logout.
 
-![Email Verification Notice](images/email-verify-notice.png)
-
 ### Test Scenarios
 
 | Scenario | Expected |
@@ -145,11 +134,7 @@ File: `tests/Browser/Auth/PasswordResetTest.php`
 Password recovery flow: request a reset link via email, then set a new password
 using a valid token. Email notifications are faked during testing.
 
-![Forgot Password Page](images/forgot-password-page.png)
-
 New password form (accessed via token):
-
-![Reset Password Page](images/reset-password-page.png)
 
 ### Test Scenarios
 
@@ -171,8 +156,6 @@ File: `tests/Browser/Auth/LogoutTest.php`
 Ensures users can log out and that protected pages (`/dashboard`) cannot be accessed
 without authentication.
 
-![Dashboard](images/dashboard.png)
-
 ### Test Scenarios
 
 | Scenario | Expected |
@@ -190,11 +173,7 @@ File: `tests/Browser/EditProfileTest.php`
 Allows authenticated users to update their name, email address, and profile photo.
 Changing the email triggers a pending verification flow before the new address is applied.
 
-![Edit Profile Page](images/edit-profile-page.png)
-
 After successfully saving changes:
-
-![Edit Profile Success](images/edit-profile-success.png)
 
 ### Test Scenarios
 
@@ -215,11 +194,7 @@ File: `tests/Browser/PasswordChangeAlertTest.php`
 Verifies that a success alert is displayed after a user successfully changes their
 password from the `/change-password` page.
 
-![Change Password Page](images/change-password-page.png)
-
 After successfully updating the password:
-
-![Change Password Success](images/change-password-success.png)
 
 ### Test Scenarios
 
@@ -236,6 +211,9 @@ Prerequisites:
 - Frontend assets are built: `npm run build`
 - Database is available and migrated (Dusk uses the `DatabaseMigrations` trait)
 - Google Chrome is installed (ChromeDriver is provided by the Dusk package)
+
+> [!WARNING]
+> `php artisan dusk` runs against `.env` unless a `.env.dusk.local` file exists — and `DatabaseMigrations` runs `migrate:fresh` before **every** test and `migrate:rollback` after, which will wipe whatever database `.env` points to. Create a `.env.dusk.local` (gitignored) with its own `DB_DATABASE` (e.g. `pos_dusk`) and an `APP_URL` matching the host/port you serve the app on, so Dusk never touches your dev database.
 
 Run all Dusk tests:
 
@@ -261,4 +239,5 @@ php artisan dusk --filter="user can login with valid credentials"
 
 ```bash
 php artisan dusk tests/Browser/CaptureDocScreenshotsTest.php
+php artisan dusk tests/Browser/CapturePosScreenshotsTest.php
 ```
