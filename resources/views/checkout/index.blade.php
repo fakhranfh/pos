@@ -11,67 +11,16 @@
     <!-- Product search / grid -->
     <div class="lg:col-span-2">
         <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4">
-            <div class="flex flex-col sm:flex-row gap-3">
-                <input
-                    type="text"
-                    id="productSearch"
-                    autofocus
-                    placeholder="{{ __('Search by name or SKU, or scan barcode...') }}"
-                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-lg py-3 px-4"
-                />
-
-                <select
-                    id="categoryFilter"
-                    class="block w-full sm:w-56 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-lg py-3 px-4"
-                >
-                    <option value="">{{ __('All Categories') }}</option>
-                    @foreach ($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="mt-3 flex flex-col sm:flex-row gap-3">
-                <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <input
-                        type="number"
-                        id="priceMin"
-                        min="0"
-                        placeholder="{{ __('Min price') }}"
-                        class="w-full sm:w-32 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white py-2 px-3"
-                    />
-                    <span class="text-gray-400">-</span>
-                    <input
-                        type="number"
-                        id="priceMax"
-                        min="0"
-                        placeholder="{{ __('Max price') }}"
-                        class="w-full sm:w-32 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white py-2 px-3"
-                    />
-                </div>
-
-                <select
-                    id="sortBy"
-                    class="block w-full sm:w-56 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white py-2 px-3"
-                >
-                    <option value="name:asc">{{ __('Name (A-Z)') }}</option>
-                    <option value="name:desc">{{ __('Name (Z-A)') }}</option>
-                    <option value="price:asc">{{ __('Price (Low to High)') }}</option>
-                    <option value="price:desc">{{ __('Price (High to Low)') }}</option>
-                    <option value="stock:asc">{{ __('Stock (Low to High)') }}</option>
-                    <option value="stock:desc">{{ __('Stock (High to Low)') }}</option>
-                </select>
-
-                <button
-                    type="button"
-                    id="resetFilters"
-                    class="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                >
-                    {{ __('Reset Filters') }}
-                </button>
-            </div>
-
-            <div id="productGrid" class="mt-4 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[65vh] overflow-y-auto"></div>
+            <x-product-picker
+                id="checkoutProductPicker"
+                :search-url="route('checkout.products')"
+                on-select="onCheckoutProductSelected"
+                :show-filters="true"
+                :categories="$categories"
+                :infinite-scroll="true"
+                :autofocus="true"
+                :placeholder="__('Search by name or SKU, or scan barcode...')"
+            />
         </div>
     </div>
 
@@ -137,23 +86,8 @@
 <script>
 (function () {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-    const searchUrl = "{{ route('checkout.products') }}";
     const storeUrl = "{{ route('checkout.store') }}";
-    const placeholderImageUrl = 'data:image/svg+xml;utf8,' + encodeURIComponent(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300">' +
-        '<rect width="300" height="300" fill="#e5e7eb" />' +
-        '<g fill="#9ca3af"><path d="M100 120h100v80H100z" fill="none" stroke="#9ca3af" stroke-width="8"/>' +
-        '<circle cx="125" cy="145" r="10"/><path d="M100 190l35-35 25 25 30-30 35 35v10H100z"/></g>' +
-        '</svg>'
-    );
 
-    const productSearch = document.getElementById('productSearch');
-    const categoryFilter = document.getElementById('categoryFilter');
-    const priceMin = document.getElementById('priceMin');
-    const priceMax = document.getElementById('priceMax');
-    const sortBy = document.getElementById('sortBy');
-    const resetFilters = document.getElementById('resetFilters');
-    const productGrid = document.getElementById('productGrid');
     const cartItems = document.getElementById('cartItems');
     const cartEmptyState = document.getElementById('cartEmptyState');
     const cartError = document.getElementById('cartError');
@@ -165,147 +99,12 @@
     const payButton = document.getElementById('payButton');
 
     let cart = [];
-    let searchTimer = null;
-    let nextPage = 1;
-    let isLoading = false;
-    let hasMore = true;
-    const skeletonClass = 'product-skeleton';
 
     function formatCurrency(value) {
         return 'Rp ' + Number(value || 0).toLocaleString('id-ID', { maximumFractionDigits: 0 });
     }
 
-    function skeletonCardHtml() {
-        return `
-            <div class="${skeletonClass} animate-pulse bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-3">
-                <div class="w-full h-24 bg-gray-200 dark:bg-gray-600 rounded mb-2"></div>
-                <div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-3/4 mb-2"></div>
-                <div class="h-2 bg-gray-200 dark:bg-gray-600 rounded w-1/2 mb-2"></div>
-                <div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-1/3 mb-2"></div>
-                <div class="h-2 bg-gray-200 dark:bg-gray-600 rounded w-1/4"></div>
-            </div>
-        `;
-    }
-
-    function renderSkeleton(count = 8) {
-        productGrid.innerHTML = Array.from({ length: count }).map(skeletonCardHtml).join('');
-    }
-
-    function appendSkeleton(count = 4) {
-        productGrid.insertAdjacentHTML('beforeend', Array.from({ length: count }).map(skeletonCardHtml).join(''));
-    }
-
-    function removeSkeletons() {
-        productGrid.querySelectorAll(`.${skeletonClass}`).forEach((el) => el.remove());
-    }
-
-    function buildQuery() {
-        const [sort, direction] = sortBy.value.split(':');
-        const params = new URLSearchParams();
-
-        params.set('q', productSearch.value);
-        if (categoryFilter.value) {
-            params.set('category_id', categoryFilter.value);
-        }
-        if (priceMin.value !== '') {
-            params.set('price_min', priceMin.value);
-        }
-        if (priceMax.value !== '') {
-            params.set('price_max', priceMax.value);
-        }
-        params.set('sort', sort);
-        params.set('direction', direction);
-
-        return params;
-    }
-
-    function fetchProducts() {
-        nextPage = 1;
-        hasMore = true;
-        renderSkeleton();
-        loadPage({ replace: true });
-    }
-
-    function loadMore() {
-        if (isLoading || !hasMore) {
-            return;
-        }
-        appendSkeleton();
-        loadPage({ replace: false });
-    }
-
-    function loadPage({ replace }) {
-        isLoading = true;
-
-        const params = buildQuery();
-        params.set('page', nextPage);
-
-        fetch(`${searchUrl}?${params.toString()}`)
-            .then((res) => res.json())
-            .then((json) => {
-                removeSkeletons();
-                hasMore = Boolean(json.next_page);
-                nextPage = json.next_page || nextPage;
-                renderProducts(json.data, { replace });
-            })
-            .catch(() => {
-                removeSkeletons();
-                if (replace) {
-                    productGrid.innerHTML = '<p class="col-span-full text-center text-red-500 py-8">' +
-                        '{{ __('Failed to load products.') }}</p>';
-                }
-            })
-            .finally(() => {
-                isLoading = false;
-            });
-    }
-
-    function renderProducts(products, { replace }) {
-        if (replace && !products.length) {
-            productGrid.innerHTML = '<p class="col-span-full text-center text-gray-500 dark:text-gray-400 py-8">' +
-                '{{ __('No products found') }}</p>';
-            return;
-        }
-
-        if (replace) {
-            productGrid.innerHTML = '';
-        }
-
-        const html = products.map((product) => `
-            <button
-                type="button"
-                class="product-card text-left bg-gray-50 dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600 rounded-lg p-3 transition"
-                data-id="${product.id}"
-                data-name="${encodeURIComponent(product.name)}"
-                data-price="${product.price}"
-                data-stock="${product.stock}"
-            >
-                <img src="${product.image_url || placeholderImageUrl}" alt="${product.name}" class="w-full h-24 object-cover rounded mb-2 bg-gray-200 dark:bg-gray-600">
-                <div class="font-semibold text-gray-900 dark:text-white text-sm">${product.name}</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400">${product.sku}</div>
-                <div class="mt-1 text-sm font-bold text-blue-600 dark:text-blue-400">${formatCurrency(product.price)}</div>
-                <div class="text-xs text-gray-400">{{ __('Stock') }}: ${product.stock}</div>
-            </button>
-        `).join('');
-
-        productGrid.insertAdjacentHTML('beforeend', html);
-
-        products.forEach((product) => {
-            const card = productGrid.querySelector(`.product-card[data-id="${product.id}"]:not([data-bound])`);
-            if (!card) {
-                return;
-            }
-            card.setAttribute('data-bound', '1');
-            card.addEventListener('click', () => addToCart({
-                id: Number(card.dataset.id),
-                name: decodeURIComponent(card.dataset.name),
-                price: Number(card.dataset.price),
-                stock: Number(card.dataset.stock),
-            }));
-        });
-    }
-
-    function addToCart(product) {
+    window.onCheckoutProductSelected = function addToCart(product) {
         clearError();
         const existing = cart.find((line) => line.id === product.id);
 
@@ -410,37 +209,6 @@
     discountAmount.addEventListener('input', updateTotals);
     amountTendered.addEventListener('input', updateTotals);
 
-    productSearch.addEventListener('input', () => {
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(() => fetchProducts(), 250);
-    });
-
-    [categoryFilter, sortBy].forEach((el) => el.addEventListener('change', () => fetchProducts()));
-
-    [priceMin, priceMax].forEach((el) => {
-        el.addEventListener('input', () => {
-            clearTimeout(searchTimer);
-            searchTimer = setTimeout(() => fetchProducts(), 400);
-        });
-    });
-
-    resetFilters.addEventListener('click', () => {
-        clearTimeout(searchTimer);
-        productSearch.value = '';
-        categoryFilter.value = '';
-        priceMin.value = '';
-        priceMax.value = '';
-        sortBy.value = 'name:asc';
-        fetchProducts();
-    });
-
-    productGrid.addEventListener('scroll', () => {
-        const threshold = 150;
-        if (productGrid.scrollTop + productGrid.clientHeight >= productGrid.scrollHeight - threshold) {
-            loadMore();
-        }
-    });
-
     payButton.addEventListener('click', () => {
         clearError();
 
@@ -494,8 +262,8 @@
                 payButton.textContent = '{{ __('Pay') }}';
             });
     });
-
-    fetchProducts();
 })();
 </script>
+
+<x-product-picker-scripts />
 @endsection
