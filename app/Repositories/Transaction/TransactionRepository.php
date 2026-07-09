@@ -2,8 +2,10 @@
 
 namespace App\Repositories\Transaction;
 
+use App\Enums\TransactionStatus;
 use App\Models\Transaction;
 use App\Repositories\Concerns\Sortable;
+use Illuminate\Support\Carbon;
 
 class TransactionRepository implements TransactionRepositoryInterface
 {
@@ -59,5 +61,17 @@ class TransactionRepository implements TransactionRepositoryInterface
     public function delete($id)
     {
         return Transaction::destroy($id);
+    }
+
+    public function salesTotals(Carbon $dateFrom, Carbon $dateTo): array
+    {
+        $query = Transaction::query()
+            ->where('status', TransactionStatus::Completed)
+            ->whereBetween('created_at', [$dateFrom, $dateTo]);
+
+        return [
+            'totalSales' => (float) $query->clone()->sum('total'),
+            'totalTransactions' => $query->clone()->count(),
+        ];
     }
 }

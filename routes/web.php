@@ -6,6 +6,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
@@ -48,6 +49,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('transactions/data/list', [TransactionController::class, 'list'])->name('transactions.list');
     Route::resource('transactions', TransactionController::class);
+
+    Route::get('reports/sales/data/list', [ReportController::class, 'salesProducts'])->name('reports.sales.products');
+    Route::get('reports/sales/data/totals', [ReportController::class, 'salesTotals'])->name('reports.sales.totals');
+    Route::get('reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');

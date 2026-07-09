@@ -2,6 +2,7 @@
 
 namespace App\Repositories\TransactionItem;
 
+use App\Enums\TransactionStatus;
 use App\Models\TransactionItem;
 use App\Repositories\Concerns\Sortable;
 
@@ -59,5 +60,27 @@ class TransactionItemRepository implements TransactionItemRepositoryInterface
     public function delete($id)
     {
         return TransactionItem::destroy($id);
+    }
+
+    public function topSellingProducts(array $filters = [], ?string $sort = null, string $direction = 'desc', int $perPage = 15)
+    {
+        $query = TransactionItem::query()
+            ->selectRaw('product_id, product_name, sum(quantity) as quantity, sum(line_total) as revenue')
+            ->whereHas('transaction', function ($query) use ($filters) {
+                $query->where('status', TransactionStatus::Completed);
+
+                if (! empty($filters['date_from'])) {
+                    $query->whereDate('created_at', '>=', $filters['date_from']);
+                }
+
+                if (! empty($filters['date_to'])) {
+                    $query->whereDate('created_at', '<=', $filters['date_to']);
+                }
+            })
+            ->groupBy('product_id', 'product_name');
+
+        $query = $this->applySort($query, $sort, $direction, ['product_name', 'quantity', 'revenue'], 'revenue', 'desc');
+
+        return $query->paginate($perPage);
     }
 }

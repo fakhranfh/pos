@@ -43,4 +43,10 @@ return [
         'icon' => 'receipt',
         'active_pattern' => 'transactions.*',
     ],
+    [
+        'label' => 'Sales Report',
+        'route' => 'reports.sales',
+        'icon' => 'bar_chart',
+        'active_pattern' => 'reports.*',
+    ],
 ];

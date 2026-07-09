@@ -17,4 +17,6 @@ interface TransactionItemRepositoryInterface
     public function update($id, array $data);
 
     public function delete($id);
+
+    public function topSellingProducts(array $filters = [], ?string $sort = null, string $direction = 'desc', int $perPage = 15);
 }

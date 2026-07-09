@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Transaction;
 
+use Illuminate\Support\Carbon;
+
 interface TransactionRepositoryInterface
 {
     public function query(array $filters = []);
@@ -17,4 +19,9 @@ interface TransactionRepositoryInterface
     public function update($id, array $data);
 
     public function delete($id);
+
+    /**
+     * @return array{totalSales: float, totalTransactions: int}
+     */
+    public function salesTotals(Carbon $dateFrom, Carbon $dateTo): array;
 }
