@@ -48,7 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('stock-movements', StockMovementController::class)->only(['index', 'show', 'create', 'store']);
 
     Route::get('transactions/data/list', [TransactionController::class, 'list'])->name('transactions.list');
-    Route::resource('transactions', TransactionController::class);
+    Route::resource('transactions', TransactionController::class)->except(['create', 'store']);
 
     Route::get('reports/sales/data/list', [ReportController::class, 'salesProducts'])->name('reports.sales.products');
     Route::get('reports/sales/data/totals', [ReportController::class, 'salesTotals'])->name('reports.sales.totals');

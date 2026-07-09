@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Transaction\StoreTransactionRequest;
 use App\Http\Requests\Transaction\UpdateTransactionRequest;
 use App\Http\Responses\MessageResponse;
 use App\Http\Responses\PaginatedResponse;
@@ -60,18 +59,6 @@ class TransactionController extends Controller
         return view('app.transaction.show', [
             'item' => $item,
         ] + $foreignData);
-    }
-
-    public function create()
-    {
-        return view('app.transaction.create', $this->foreignData());
-    }
-
-    public function store(StoreTransactionRequest $request)
-    {
-        $item = $this->transactionService->create($request->validated());
-
-        return redirect()->route('transactions.show', $item)->with('success', __('Transactions created successfully.'));
     }
 
     public function edit($id)
