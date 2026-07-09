@@ -46,7 +46,7 @@
 
         <!-- Form Card -->
         <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
-            <form method="POST" action="{{ route('products.store') }}" class="space-y-4" id="createForm" onsubmit="handleFormSubmit(event)">
+            <form method="POST" action="{{ route('products.store') }}" class="space-y-4" id="createForm" onsubmit="handleFormSubmit(event)" enctype="multipart/form-data">
                 @csrf
 
                 <!-- Fields -->
@@ -107,9 +107,9 @@
           @enderror
         </div>
         <div class="mb-4">
-          <label for="image_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300">@lang('Image Url')</label>
-          <input type="text" id="image_url" name="image_url" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" value="{{ isset($item) ? $item->image_url : old('image_url') }}" required @if(isset($isView)) disabled @endif />
-          @error('image_url')
+          <label for="image" class="block text-sm font-medium text-gray-700 dark:text-gray-300">@lang('Image')</label>
+          <input type="file" id="image" name="image" accept="image/*" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" @if(isset($isView)) disabled @endif />
+          @error('image')
             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
           @enderror
         </div>

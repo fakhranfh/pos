@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', $item->category_id ?? __('View Products'))
+@section('title', $item->name ?? __('View Products'))
 
 @php
-    $topbarTitle = $item->category_id ?? __('View Products');
+    $topbarTitle = $item->name ?? __('View Products');
 @endphp
 
 @section('app-content')
@@ -18,14 +18,14 @@
                     </a>
                 </li>
                 <li class="text-gray-400">/</li>
-                <li class="text-gray-900 dark:text-white">{{ $item->name ?? $item->id }}</li>
+                <li class="text-gray-900 dark:text-white">{{ $item->name }}</li>
             </ol>
         </nav>
 
         <!-- Header -->
         <div class="mb-6">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-                {{ $item->category_id ?? __('View Products') }}
+                {{ $item->name ?? __('View Products') }}
             </h1>
             <p class="mt-2 text-gray-600 dark:text-gray-400">
                 {{ __('Details for this record') }}
@@ -45,9 +45,9 @@
                     <div class="px-6">
                         <dl class="divide-y divide-gray-200 dark:divide-gray-700">
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
-          <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Category Id')</dt>
+          <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Category')</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-            {{ $item->category_id }}
+            {{ $item->category->name ?? '' }}
           </dd>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
@@ -65,13 +65,13 @@
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
           <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Price')</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-            {{ $item->price }}
+            Rp {{ number_format($item->price, 0, ',', '.') }}
           </dd>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
           <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Cost Price')</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-            {{ $item->cost_price }}
+            Rp {{ number_format($item->cost_price, 0, ',', '.') }}
           </dd>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
@@ -87,9 +87,13 @@
           </dd>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
-          <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Image Url')</dt>
+          <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Image')</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-            {{ $item->image_url }}
+            @if ($item->image_url)
+              <img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="h-32 w-32 object-cover rounded-md border border-gray-200 dark:border-gray-600" />
+            @else
+              &mdash;
+            @endif
           </dd>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">

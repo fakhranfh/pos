@@ -39,6 +39,7 @@ class CheckoutController extends Controller
                 'price' => (float) $product->price,
                 'stock' => $product->stock,
                 'category' => $product->category->name ?? null,
+                'image_url' => $product->image_url,
             ]),
         ]);
     }

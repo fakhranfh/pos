@@ -49,9 +49,10 @@
                 ['key' => 'created', 'label' => 'Created', 'type' => 'datetime'],
             ]">
             <x-slot name="headers">
-                <x-th-sort sortKey="id">{{ __('ID') }}</x-th-sort>
                 <x-th-sort sortKey="sku">{{ __('Sku') }}</x-th-sort>
                 <x-th-sort sortKey="name">{{ __('Name') }}</x-th-sort>
+                <th class="px-6 py-3 text-left font-semibold">{{ __('Category') }}</th>
+                <x-th-sort sortKey="price">{{ __('Price') }}</x-th-sort>
                 <x-th-sort sortKey="created_at">{{ __('Created') }}</x-th-sort>
                 <th class="px-6 py-3 text-right font-semibold">{{ __('Actions') }}</th>
             </x-slot>
@@ -81,14 +82,19 @@
 
 @push('scripts')
 <script>
+function formatCurrency(value) {
+    return 'Rp ' + Number(value || 0).toLocaleString('id-ID', { maximumFractionDigits: 0 });
+}
+
 function loadProductsTable() {
     loadTableData('productsTable', buildFilterUrl('productsTable'), function(item) {
         const row = document.createElement('tr');
         row.className = 'border-b hover:bg-gray-50 dark:hover:bg-gray-700';
         row.innerHTML = `
-            <td class="px-6 py-3">${item.id}</td>
             <td class="px-6 py-3">${item.sku}</td>
             <td class="px-6 py-3">${item.name}</td>
+            <td class="px-6 py-3">${item.category}</td>
+            <td class="px-6 py-3">${formatCurrency(item.price)}</td>
             <td class="px-6 py-3">${item.created_at}</td>
             <td class="px-6 py-3 text-right">
                 <div class="flex gap-2 justify-end">

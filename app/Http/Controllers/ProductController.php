@@ -7,6 +7,7 @@ use App\Http\Requests\Product\UpdateProductRequest;
 use App\Services\CategoryService;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -37,13 +38,14 @@ class ProductController extends Controller
     public function list(Request $request)
     {
         $filters = $request->only(['sku', 'name', 'created_from', 'created_to']);
-        $items = $this->productService->get($filters, [], $request->query('sort'), $request->query('direction', 'asc'));
+        $items = $this->productService->get($filters, ['category'], $request->query('sort'), $request->query('direction', 'asc'));
 
         return response()->json([
             'data' => $items->map(fn ($item) => [
-                'id' => $item->id ?? '',
                 'sku' => $item->sku ?? '',
                 'name' => $item->name ?? '',
+                'category' => $item->category->name ?? '',
+                'price' => $item->price ?? 0,
                 'created_at' => $item->created_at?->format('Y-m-d H:i:s') ?? '',
                 'actions' => [
                     'show' => route('products.show', $item->id),
@@ -71,7 +73,14 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-        $item = $this->productService->create($request->validated());
+        $data = $request->validated();
+        unset($data['image']);
+
+        if ($request->hasFile('image')) {
+            $data['image_url'] = $request->file('image')->store('products', 'public');
+        }
+
+        $item = $this->productService->create($data);
 
         return redirect()->route('products.show', $item)->with('success', __('Products created successfully.'));
     }
@@ -88,7 +97,20 @@ class ProductController extends Controller
 
     public function update(UpdateProductRequest $request, $id)
     {
-        $this->productService->update($id, $request->validated());
+        $data = $request->validated();
+        unset($data['image']);
+
+        if ($request->hasFile('image')) {
+            $item = $this->productService->find($id);
+
+            if ($item->image_url) {
+                Storage::disk('public')->delete($item->image_url);
+            }
+
+            $data['image_url'] = $request->file('image')->store('products', 'public');
+        }
+
+        $this->productService->update($id, $data);
 
         return redirect()->route('products.show', $id)->with('success', __('Products updated successfully.'));
     }

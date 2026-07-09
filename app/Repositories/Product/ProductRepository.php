@@ -10,7 +10,7 @@ class ProductRepository implements ProductRepositoryInterface
 {
     use Sortable;
 
-    protected array $sortable = ['id', 'sku', 'name', 'price', 'stock', 'created_at'];
+    protected array $sortable = ['sku', 'name', 'price', 'stock', 'created_at'];
 
     public function query(array $filters = [])
     {
@@ -41,7 +41,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function find($id)
     {
-        return Product::find($id);
+        return Product::with('category')->find($id);
     }
 
     public function create(array $data)

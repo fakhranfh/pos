@@ -91,6 +91,13 @@
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
     const searchUrl = "{{ route('checkout.products') }}";
     const storeUrl = "{{ route('checkout.store') }}";
+    const placeholderImageUrl = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300">' +
+        '<rect width="300" height="300" fill="#e5e7eb" />' +
+        '<g fill="#9ca3af"><path d="M100 120h100v80H100z" fill="none" stroke="#9ca3af" stroke-width="8"/>' +
+        '<circle cx="125" cy="145" r="10"/><path d="M100 190l35-35 25 25 30-30 35 35v10H100z"/></g>' +
+        '</svg>'
+    );
 
     const productSearch = document.getElementById('productSearch');
     const productGrid = document.getElementById('productGrid');
@@ -137,6 +144,7 @@
                 data-price="${product.price}"
                 data-stock="${product.stock}"
             >
+                <img src="${product.image_url || placeholderImageUrl}" alt="${product.name}" class="w-full h-24 object-cover rounded mb-2 bg-gray-200 dark:bg-gray-600">
                 <div class="font-semibold text-gray-900 dark:text-white text-sm">${product.name}</div>
                 <div class="text-xs text-gray-500 dark:text-gray-400">${product.sku}</div>
                 <div class="mt-1 text-sm font-bold text-blue-600 dark:text-blue-400">${formatCurrency(product.price)}</div>

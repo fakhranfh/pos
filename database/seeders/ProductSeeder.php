@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class ProductSeeder extends Seeder
 {
@@ -88,18 +89,44 @@ class ProductSeeder extends Seeder
             $category = Category::where('name', $categoryName)->first();
 
             foreach ($products as $index => $product) {
+                $sku = $skuPrefixes[$categoryName].'-'.str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT);
+
                 Product::create([
                     'category_id' => $category->id,
-                    'sku' => $skuPrefixes[$categoryName].'-'.str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
+                    'sku' => $sku,
                     'name' => $product['name'],
                     'price' => $product['price'],
                     'cost_price' => $product['cost_price'],
                     'stock' => fake()->numberBetween(5, 120),
                     'low_stock_threshold' => fake()->numberBetween(5, 15),
-                    'image_url' => null,
+                    'image_url' => $this->uploadPlaceholderImage($sku, $product['name']),
                     'is_active' => true,
                 ]);
             }
         }
+    }
+
+    /**
+     * Generate a simple SVG placeholder image for a product and upload it to
+     * the public disk, returning the stored path.
+     */
+    private function uploadPlaceholderImage(string $sku, string $name): string
+    {
+        $colors = ['#2563eb', '#059669', '#d97706', '#dc2626', '#7c3aed', '#0891b2'];
+        $color = $colors[crc32($sku) % count($colors)];
+        $initials = strtoupper(collect(explode(' ', $name))->take(2)->map(fn ($word) => $word[0] ?? '')->implode(''));
+
+        $svg = <<<SVG
+        <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300">
+            <rect width="300" height="300" fill="{$color}" />
+            <text x="50%" y="50%" font-family="sans-serif" font-size="80" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">{$initials}</text>
+        </svg>
+        SVG;
+
+        $path = "products/{$sku}.svg";
+
+        Storage::disk('public')->put($path, $svg);
+
+        return $path;
     }
 }
