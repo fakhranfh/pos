@@ -51,45 +51,45 @@
           </dd>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
-          <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Cashier Id')</dt>
+          <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Cashier')</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-            {{ $item->cashier_id }}
+            {{ $item->cashier?->name }}
           </dd>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
           <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Subtotal')</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-            {{ $item->subtotal }}
+            Rp {{ number_format($item->subtotal, 0, ',', '.') }}
           </dd>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
           <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Discount Amount')</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-            {{ $item->discount_amount }}
+            Rp {{ number_format($item->discount_amount, 0, ',', '.') }}
           </dd>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
           <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Tax Amount')</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-            {{ $item->tax_amount }}
+            Rp {{ number_format($item->tax_amount, 0, ',', '.') }}
           </dd>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
           <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Total')</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-            {{ $item->total }}
+            Rp {{ number_format($item->total, 0, ',', '.') }}
           </dd>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
           <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Amount Tendered')</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-            {{ $item->amount_tendered }}
+            Rp {{ number_format($item->amount_tendered, 0, ',', '.') }}
           </dd>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
           <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Change Due')</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-            {{ $item->change_due }}
+            Rp {{ number_format($item->change_due, 0, ',', '.') }}
           </dd>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
@@ -105,6 +105,42 @@
           </dd>
         </div>
                         </dl>
+                    </div>
+
+                    <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                            {{ __('Transaction Items') }}
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+                                <thead>
+                                    <tr class="text-left text-gray-600 dark:text-gray-400">
+                                        <th class="px-4 py-2 font-medium">{{ __('Product') }}</th>
+                                        <th class="px-4 py-2 font-medium text-right">{{ __('Unit Price') }}</th>
+                                        <th class="px-4 py-2 font-medium text-right">{{ __('Quantity') }}</th>
+                                        <th class="px-4 py-2 font-medium text-right">{{ __('Discount') }}</th>
+                                        <th class="px-4 py-2 font-medium text-right">{{ __('Line Total') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                    @forelse ($item->items as $transactionItem)
+                                        <tr class="text-gray-900 dark:text-white">
+                                            <td class="px-4 py-2">{{ $transactionItem->product_name }}</td>
+                                            <td class="px-4 py-2 text-right">Rp {{ number_format($transactionItem->unit_price, 0, ',', '.') }}</td>
+                                            <td class="px-4 py-2 text-right">{{ $transactionItem->quantity }}</td>
+                                            <td class="px-4 py-2 text-right">Rp {{ number_format($transactionItem->discount_amount, 0, ',', '.') }}</td>
+                                            <td class="px-4 py-2 text-right">Rp {{ number_format($transactionItem->line_total, 0, ',', '.') }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="px-4 py-4 text-center text-gray-500 dark:text-gray-400">
+                                                {{ __('No transaction items found.') }}
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -58,7 +58,7 @@ class TransactionController extends Controller
 
     public function show($id)
     {
-        $item = $this->transactionService->find($id);
+        $item = $this->transactionService->find($id)->load(['cashier', 'items']);
         $foreignData = $this->foreignData();
 
         return view('app.transaction.show', [

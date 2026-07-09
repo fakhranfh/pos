@@ -43,10 +43,4 @@ return [
         'icon' => 'receipt',
         'active_pattern' => 'transactions.*',
     ],
-    [
-        'label' => 'Transaction Items',
-        'route' => 'transaction-items.index',
-        'icon' => 'receipt_long',
-        'active_pattern' => 'transaction-items.*',
-    ],
 ];
