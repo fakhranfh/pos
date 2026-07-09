@@ -117,8 +117,8 @@
           <label for="payment_method" class="block text-sm font-medium text-gray-700 dark:text-gray-300">@lang('Payment Method')</label>
           <select id="payment_method" name="payment_method" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required @if(isset($isView)) disabled @endif>
             <option value="">-- @lang('Select') --</option>
-            <option value="cash" {{ old('payment_method', isset($item) ? $item->payment_method : '') === 'cash' ? 'selected' : '' }}>@lang('Cash')</option>
-            <option value="other" {{ old('payment_method', isset($item) ? $item->payment_method : '') === 'other' ? 'selected' : '' }}>@lang('Other')</option>
+            <option value="cash" {{ old('payment_method', isset($item) ? $item->payment_method?->value : '') === 'cash' ? 'selected' : '' }}>@lang('Cash')</option>
+            <option value="other" {{ old('payment_method', isset($item) ? $item->payment_method?->value : '') === 'other' ? 'selected' : '' }}>@lang('Other')</option>
           </select>
           @error('payment_method')
             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>

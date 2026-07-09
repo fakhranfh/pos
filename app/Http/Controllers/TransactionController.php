@@ -41,7 +41,7 @@ class TransactionController extends Controller
         $data = $items->getCollection()->map(fn ($item) => [
             'id' => $item->id ?? '',
             'invoice_number' => $item->invoice_number ?? '',
-            'payment_method' => $item->payment_method ?? '',
+            'payment_method' => $item->payment_method?->label() ?? '',
             'status' => $item->status ?? '',
             'created_at' => $item->formatted_created_at ?? '',
             'actions' => [

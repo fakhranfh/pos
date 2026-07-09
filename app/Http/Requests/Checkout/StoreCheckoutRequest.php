@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Checkout;
 
+use App\Enums\PaymentMethod;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreCheckoutRequest extends FormRequest
 {
@@ -18,7 +20,7 @@ class StoreCheckoutRequest extends FormRequest
             'items.*.product_id' => 'required|integer|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
             'discount_amount' => 'nullable|numeric|min:0',
-            'payment_method' => 'required|in:cash,other',
+            'payment_method' => ['required', Rule::enum(PaymentMethod::class)],
             'amount_tendered' => 'required|numeric|min:0',
         ];
     }

@@ -95,7 +95,7 @@
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
           <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Payment Method')</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-            {{ $item->payment_method }}
+            {{ $item->payment_method?->label() }}
           </dd>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">

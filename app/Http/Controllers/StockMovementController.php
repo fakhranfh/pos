@@ -44,7 +44,7 @@ class StockMovementController extends Controller
 
         $data = $items->getCollection()->map(fn ($item) => [
             'id' => $item->id ?? '',
-            'type' => $item->type ?? '',
+            'type' => $item->type?->label() ?? '',
             'quantity_change' => $item->quantity_change ?? '',
             'created_at' => $item->formatted_created_at ?? '',
             'actions' => [

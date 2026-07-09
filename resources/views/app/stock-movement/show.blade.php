@@ -18,7 +18,7 @@
                     </a>
                 </li>
                 <li class="text-gray-400">/</li>
-                <li class="text-gray-900 dark:text-white">{{ $item->type ?? $item->id }}</li>
+                <li class="text-gray-900 dark:text-white">{{ $item->type?->label() ?? $item->id }}</li>
             </ol>
         </nav>
 
@@ -53,7 +53,7 @@
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
           <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Type')</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-            {{ $item->type }}
+            {{ $item->type?->label() }}
           </dd>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">

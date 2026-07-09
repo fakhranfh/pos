@@ -61,7 +61,7 @@
                 <span>{{ number_format($transaction->total, 0, ',', '.') }}</span>
             </div>
             <div class="flex justify-between">
-                <span>{{ __('Paid') }} ({{ ucfirst($transaction->payment_method) }})</span>
+                <span>{{ __('Paid') }} ({{ $transaction->payment_method?->label() }})</span>
                 <span>{{ number_format($transaction->amount_tendered, 0, ',', '.') }}</span>
             </div>
             <div class="flex justify-between">

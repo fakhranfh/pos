@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Transaction;
 
+use App\Enums\PaymentMethod;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -23,7 +24,7 @@ class UpdateTransactionRequest extends FormRequest
             'total' => 'required|numeric|min:0',
             'amount_tendered' => 'required|numeric|min:0',
             'change_due' => 'required|numeric|min:0',
-            'payment_method' => 'required|in:cash,other',
+            'payment_method' => ['required', Rule::enum(PaymentMethod::class)],
             'status' => 'required|in:completed,voided',
         ];
     }

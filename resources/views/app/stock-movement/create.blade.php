@@ -68,10 +68,10 @@
           <label for="type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">@lang('Type')</label>
           <select id="type" name="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required @if(isset($isView)) disabled @endif>
             <option value="">-- @lang('Select') --</option>
-            <option value="sale" {{ old('type', isset($item) ? $item->type : '') === 'sale' ? 'selected' : '' }}>@lang('Sale')</option>
-            <option value="stock_in" {{ old('type', isset($item) ? $item->type : '') === 'stock_in' ? 'selected' : '' }}>@lang('Stock In')</option>
-            <option value="adjustment" {{ old('type', isset($item) ? $item->type : '') === 'adjustment' ? 'selected' : '' }}>@lang('Adjustment')</option>
-            <option value="return" {{ old('type', isset($item) ? $item->type : '') === 'return' ? 'selected' : '' }}>@lang('Return')</option>
+            <option value="sale" {{ old('type', isset($item) ? $item->type?->value : '') === 'sale' ? 'selected' : '' }}>@lang('Sale')</option>
+            <option value="stock_in" {{ old('type', isset($item) ? $item->type?->value : '') === 'stock_in' ? 'selected' : '' }}>@lang('Stock In')</option>
+            <option value="adjustment" {{ old('type', isset($item) ? $item->type?->value : '') === 'adjustment' ? 'selected' : '' }}>@lang('Adjustment')</option>
+            <option value="return" {{ old('type', isset($item) ? $item->type?->value : '') === 'return' ? 'selected' : '' }}>@lang('Return')</option>
           </select>
           @error('type')
             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>

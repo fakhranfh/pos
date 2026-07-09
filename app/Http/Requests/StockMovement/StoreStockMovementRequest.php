@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\StockMovement;
 
+use App\Enums\StockMovementType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreStockMovementRequest extends FormRequest
 {
@@ -15,7 +17,7 @@ class StoreStockMovementRequest extends FormRequest
     {
         return [
             'product_id' => 'required|integer|exists:products,id',
-            'type' => 'required|in:sale,stock_in,adjustment,return',
+            'type' => ['required', Rule::enum(StockMovementType::class)],
             'quantity_change' => 'required|integer',
             'reason' => 'required_if:type,adjustment|nullable|string',
         ];
