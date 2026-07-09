@@ -38,10 +38,11 @@ class ProductController extends Controller
     public function list(Request $request)
     {
         $filters = $request->only(['sku', 'name', 'created_from', 'created_to']);
-        $items = $this->productService->get($filters, ['category'], $request->query('sort'), $request->query('direction', 'asc'));
+        $perPage = (int) $request->query('per_page', 15);
+        $items = $this->productService->get($filters, ['category'], $request->query('sort'), $request->query('direction', 'asc'), $perPage);
 
         return response()->json([
-            'data' => $items->map(fn ($item) => [
+            'data' => $items->getCollection()->map(fn ($item) => [
                 'sku' => $item->sku ?? '',
                 'name' => $item->name ?? '',
                 'category' => $item->category->name ?? '',
@@ -53,6 +54,12 @@ class ProductController extends Controller
                     'delete' => route('products.destroy', $item->id),
                 ],
             ])->toArray(),
+            'meta' => [
+                'current_page' => $items->currentPage(),
+                'last_page' => $items->lastPage(),
+                'per_page' => $items->perPage(),
+                'total' => $items->total(),
+            ],
         ]);
     }
 

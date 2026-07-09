@@ -43,10 +43,11 @@ class TransactionItemController extends Controller
     public function list(Request $request)
     {
         $filters = $request->only(['product_name', 'created_from', 'created_to']);
-        $items = $this->transactionItemService->get($filters, [], $request->query('sort'), $request->query('direction', 'asc'));
+        $perPage = (int) $request->query('per_page', 15);
+        $items = $this->transactionItemService->get($filters, [], $request->query('sort'), $request->query('direction', 'asc'), $perPage);
 
         return response()->json([
-            'data' => $items->map(fn ($item) => [
+            'data' => $items->getCollection()->map(fn ($item) => [
                 'id' => $item->id ?? '',
                 'product_name' => $item->product_name ?? '',
                 'created_at' => $item->created_at?->format('Y-m-d H:i:s') ?? '',
@@ -54,6 +55,12 @@ class TransactionItemController extends Controller
                     'show' => route('transaction-items.show', $item->id),
                 ],
             ])->toArray(),
+            'meta' => [
+                'current_page' => $items->currentPage(),
+                'last_page' => $items->lastPage(),
+                'per_page' => $items->perPage(),
+                'total' => $items->total(),
+            ],
         ]);
     }
 

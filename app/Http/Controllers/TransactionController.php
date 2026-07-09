@@ -33,10 +33,11 @@ class TransactionController extends Controller
     public function list(Request $request)
     {
         $filters = $request->only(['invoice_number', 'payment_method', 'status', 'created_from', 'created_to']);
-        $items = $this->transactionService->get($filters, [], $request->query('sort'), $request->query('direction', 'asc'));
+        $perPage = (int) $request->query('per_page', 15);
+        $items = $this->transactionService->get($filters, [], $request->query('sort'), $request->query('direction', 'asc'), $perPage);
 
         return response()->json([
-            'data' => $items->map(fn ($item) => [
+            'data' => $items->getCollection()->map(fn ($item) => [
                 'id' => $item->id ?? '',
                 'invoice_number' => $item->invoice_number ?? '',
                 'payment_method' => $item->payment_method ?? '',
@@ -46,6 +47,12 @@ class TransactionController extends Controller
                     'show' => route('transactions.show', $item->id),
                 ],
             ])->toArray(),
+            'meta' => [
+                'current_page' => $items->currentPage(),
+                'last_page' => $items->lastPage(),
+                'per_page' => $items->perPage(),
+                'total' => $items->total(),
+            ],
         ]);
     }
 

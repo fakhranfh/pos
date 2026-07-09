@@ -76,6 +76,26 @@
         </h3>
     </div>
 
+    <div class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between flex-wrap gap-2">
+        <div class="flex items-center gap-2">
+            <label class="text-sm text-gray-600 dark:text-gray-400">{{ __('Show') }}</label>
+            <select
+                data-per-page-select="{{ $tableId }}"
+                class="border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="10">10</option>
+                <option value="15" selected>15</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+            <span class="text-sm text-gray-600 dark:text-gray-400">{{ __('entries') }}</span>
+        </div>
+
+        <div id="{{ $tableId }}-pagination-top" class="flex items-center gap-2">
+            <!-- Pagination will be loaded here -->
+        </div>
+    </div>
+
     <div class="overflow-x-auto">
         <table class="w-full text-sm text-gray-700 dark:text-gray-300 display" id="{{ $tableId }}" data-list-url="{{ $listUrl }}">
             <thead class="bg-gray-100 dark:bg-gray-700">
@@ -87,5 +107,10 @@
                 <!-- Data will be loaded here -->
             </tbody>
         </table>
+    </div>
+
+    <div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between flex-wrap gap-2"
+        id="{{ $tableId }}-pagination">
+        <!-- Pagination will be loaded here -->
     </div>
 </div>

@@ -27,11 +27,11 @@ class ProductRepository implements ProductRepositoryInterface
         return $query;
     }
 
-    public function get(array $filters = [], array $with = [], ?string $sort = null, string $direction = 'asc')
+    public function get(array $filters = [], array $with = [], ?string $sort = null, string $direction = 'asc', int $perPage = 15)
     {
         $query = $this->applySort($this->query($filters), $sort, $direction, $this->sortable);
 
-        return $query->with($with)->get();
+        return $query->with($with)->paginate($perPage);
     }
 
     public function getAll()
