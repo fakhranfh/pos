@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
+use App\Http\Responses\MessageResponse;
+use App\Http\Responses\PaginatedResponse;
 use App\Services\CategoryService;
 use Illuminate\Http\Request;
 
@@ -35,24 +37,18 @@ class CategoryController extends Controller
         $perPage = (int) $request->query('per_page', 15);
         $items = $this->categoryService->get($filters, [], $request->query('sort'), $request->query('direction', 'asc'), $perPage);
 
-        return response()->json([
-            'data' => $items->getCollection()->map(fn ($item) => [
-                'id' => $item->id ?? '',
-                'name' => $item->name ?? '',
-                'created_at' => $item->created_at?->format('Y-m-d H:i:s') ?? '',
-                'actions' => [
-                    'show' => route('categories.show', $item->id),
-                    'edit' => route('categories.edit', $item->id),
-                    'delete' => route('categories.destroy', $item->id),
-                ],
-            ])->toArray(),
-            'meta' => [
-                'current_page' => $items->currentPage(),
-                'last_page' => $items->lastPage(),
-                'per_page' => $items->perPage(),
-                'total' => $items->total(),
+        $data = $items->getCollection()->map(fn ($item) => [
+            'id' => $item->id ?? '',
+            'name' => $item->name ?? '',
+            'created_at' => $item->formatted_created_at ?? '',
+            'actions' => [
+                'show' => route('categories.show', $item->id),
+                'edit' => route('categories.edit', $item->id),
+                'delete' => route('categories.destroy', $item->id),
             ],
-        ]);
+        ])->toArray();
+
+        return new PaginatedResponse($data, $items);
     }
 
     public function show($id)
@@ -99,7 +95,7 @@ class CategoryController extends Controller
         $this->categoryService->delete($id);
 
         if (request()->expectsJson()) {
-            return response()->json(['message' => __('Item deleted successfully.')]);
+            return new MessageResponse(__('Item deleted successfully.'));
         }
 
         return redirect()->route('categories.index')->with('success', __('Categories deleted successfully.'));

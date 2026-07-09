@@ -21,7 +21,7 @@ class NotificationResource extends JsonResource
                 'stock' => $this->data['stock'] ?? '?',
             ]),
             'read' => $this->read_at !== null,
-            'created_at' => $this->created_at?->format('Y-m-d H:i:s') ?? '',
+            'created_at' => $this->created_at?->format('d M Y H:i') ?? '',
             'actions' => [
                 'view' => route('products.low-stock', ['highlight' => $this->data['product_id'] ?? null]),
             ],

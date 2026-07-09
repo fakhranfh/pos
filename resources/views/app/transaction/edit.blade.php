@@ -173,14 +173,14 @@
                         <div>
                             <p class="text-gray-500 dark:text-gray-400">{{ __('Created') }}</p>
                             <p class="text-gray-900 dark:text-white font-medium">
-                                @userDatetime($item->created_at)
+                                {{ $item->formatted_created_at }}
                             </p>
                         </div>
 
                         <div>
                             <p class="text-gray-500 dark:text-gray-400">{{ __('Updated') }}</p>
                             <p class="text-gray-900 dark:text-white font-medium">
-                                @userDatetime($item->updated_at)
+                                {{ $item->formatted_updated_at }}
                             </p>
                         </div>
                     </div>

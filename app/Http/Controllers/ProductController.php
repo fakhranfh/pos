@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
+use App\Http\Responses\MessageResponse;
+use App\Http\Responses\PaginatedResponse;
 use App\Services\CategoryService;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
@@ -41,26 +43,20 @@ class ProductController extends Controller
         $perPage = (int) $request->query('per_page', 15);
         $items = $this->productService->get($filters, ['category'], $request->query('sort'), $request->query('direction', 'asc'), $perPage);
 
-        return response()->json([
-            'data' => $items->getCollection()->map(fn ($item) => [
-                'sku' => $item->sku ?? '',
-                'name' => $item->name ?? '',
-                'category' => $item->category->name ?? '',
-                'price' => $item->price ?? 0,
-                'created_at' => $item->created_at?->format('Y-m-d H:i:s') ?? '',
-                'actions' => [
-                    'show' => route('products.show', $item->id),
-                    'edit' => route('products.edit', $item->id),
-                    'delete' => route('products.destroy', $item->id),
-                ],
-            ])->toArray(),
-            'meta' => [
-                'current_page' => $items->currentPage(),
-                'last_page' => $items->lastPage(),
-                'per_page' => $items->perPage(),
-                'total' => $items->total(),
+        $data = $items->getCollection()->map(fn ($item) => [
+            'sku' => $item->sku ?? '',
+            'name' => $item->name ?? '',
+            'category' => $item->category->name ?? '',
+            'price' => $item->price ?? 0,
+            'created_at' => $item->formatted_created_at ?? '',
+            'actions' => [
+                'show' => route('products.show', $item->id),
+                'edit' => route('products.edit', $item->id),
+                'delete' => route('products.destroy', $item->id),
             ],
-        ]);
+        ])->toArray();
+
+        return new PaginatedResponse($data, $items);
     }
 
     public function lowStock()
@@ -134,7 +130,7 @@ class ProductController extends Controller
         $this->productService->delete($id);
 
         if (request()->expectsJson()) {
-            return response()->json(['message' => __('Item deleted successfully.')]);
+            return new MessageResponse(__('Item deleted successfully.'));
         }
 
         return redirect()->route('products.index')->with('success', __('Products deleted successfully.'));

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Transaction\StoreTransactionRequest;
 use App\Http\Requests\Transaction\UpdateTransactionRequest;
+use App\Http\Responses\MessageResponse;
+use App\Http\Responses\PaginatedResponse;
 use App\Models\User;
 use App\Services\TransactionService;
 use Illuminate\Http\Request;
@@ -36,24 +38,18 @@ class TransactionController extends Controller
         $perPage = (int) $request->query('per_page', 15);
         $items = $this->transactionService->get($filters, [], $request->query('sort'), $request->query('direction', 'asc'), $perPage);
 
-        return response()->json([
-            'data' => $items->getCollection()->map(fn ($item) => [
-                'id' => $item->id ?? '',
-                'invoice_number' => $item->invoice_number ?? '',
-                'payment_method' => $item->payment_method ?? '',
-                'status' => $item->status ?? '',
-                'created_at' => $item->created_at?->format('Y-m-d H:i:s') ?? '',
-                'actions' => [
-                    'show' => route('transactions.show', $item->id),
-                ],
-            ])->toArray(),
-            'meta' => [
-                'current_page' => $items->currentPage(),
-                'last_page' => $items->lastPage(),
-                'per_page' => $items->perPage(),
-                'total' => $items->total(),
+        $data = $items->getCollection()->map(fn ($item) => [
+            'id' => $item->id ?? '',
+            'invoice_number' => $item->invoice_number ?? '',
+            'payment_method' => $item->payment_method ?? '',
+            'status' => $item->status ?? '',
+            'created_at' => $item->formatted_created_at ?? '',
+            'actions' => [
+                'show' => route('transactions.show', $item->id),
             ],
-        ]);
+        ])->toArray();
+
+        return new PaginatedResponse($data, $items);
     }
 
     public function show($id)
@@ -100,7 +96,7 @@ class TransactionController extends Controller
         $this->transactionService->delete($id);
 
         if (request()->expectsJson()) {
-            return response()->json(['message' => __('Item deleted successfully.')]);
+            return new MessageResponse(__('Item deleted successfully.'));
         }
 
         return redirect()->route('transactions.index')->with('success', __('Transactions deleted successfully.'));

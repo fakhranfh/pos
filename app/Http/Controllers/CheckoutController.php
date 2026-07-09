@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Checkout\StoreCheckoutRequest;
+use App\Http\Responses\ErrorResponse;
+use App\Http\Responses\ProductSearchResponse;
 use App\Services\CategoryService;
 use App\Services\ProductService;
 use App\Services\TransactionService;
@@ -52,18 +54,17 @@ class CheckoutController extends Controller
             ],
         );
 
-        return response()->json([
-            'data' => $products->map(fn ($product) => [
-                'id' => $product->id,
-                'sku' => $product->sku,
-                'name' => $product->name,
-                'price' => (float) $product->price,
-                'stock' => $product->stock,
-                'category' => $product->category->name ?? null,
-                'image_url' => $product->image_url,
-            ])->values(),
-            'next_page' => $products->hasMorePages() ? $products->currentPage() + 1 : null,
-        ]);
+        $data = $products->map(fn ($product) => [
+            'id' => $product->id,
+            'sku' => $product->sku,
+            'name' => $product->name,
+            'price' => (float) $product->price,
+            'stock' => $product->stock,
+            'category' => $product->category->name ?? null,
+            'image_url' => $product->image_url,
+        ])->values();
+
+        return new ProductSearchResponse($data, $products->hasMorePages() ? $products->currentPage() + 1 : null);
     }
 
     public function store(StoreCheckoutRequest $request)
@@ -74,7 +75,7 @@ class CheckoutController extends Controller
         try {
             $transaction = $this->transactionService->checkout($data);
         } catch (ValidationException $e) {
-            return response()->json(['errors' => $e->errors()], 422);
+            return new ErrorResponse($e->errors());
         }
 
         return redirect()->route('checkout.receipt', $transaction)

@@ -18,7 +18,7 @@
         <div class="text-center mb-4">
             <h1 class="text-xl font-bold text-gray-900 dark:text-white">{{ __('Receipt') }}</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400">{{ $transaction->invoice_number }}</p>
-            <p class="text-xs text-gray-400">@userDatetime($transaction->created_at, 'Y-m-d H:i')</p>
+            <p class="text-xs text-gray-400">{{ $transaction->formatted_created_at }}</p>
         </div>
 
         <div class="text-sm text-gray-600 dark:text-gray-400 mb-4 space-y-1">

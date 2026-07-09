@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\NotificationResource;
+use App\Http\Responses\MessageResponse;
+use App\Http\Responses\PaginatedResponse;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
@@ -16,16 +18,9 @@ class NotificationController extends Controller
     {
         $perPage = (int) $request->query('per_page', 15);
         $items = $request->user()->notifications()->latest()->paginate($perPage);
+        $data = NotificationResource::collection($items->getCollection())->resolve();
 
-        return response()->json([
-            'data' => NotificationResource::collection($items->getCollection())->resolve(),
-            'meta' => [
-                'current_page' => $items->currentPage(),
-                'last_page' => $items->lastPage(),
-                'per_page' => $items->perPage(),
-                'total' => $items->total(),
-            ],
-        ]);
+        return new PaginatedResponse($data, $items);
     }
 
     public function markAllRead(Request $request)
@@ -33,7 +28,7 @@ class NotificationController extends Controller
         $request->user()->unreadNotifications()->update(['read_at' => now()]);
 
         if ($request->expectsJson()) {
-            return response()->json(['success' => true]);
+            return new MessageResponse(__('All notifications marked as read.'));
         }
 
         return back();

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StockMovement\StoreStockMovementRequest;
+use App\Http\Responses\PaginatedResponse;
 use App\Models\User;
 use App\Services\ProductService;
 use App\Services\StockMovementService;
@@ -41,23 +42,17 @@ class StockMovementController extends Controller
         $perPage = (int) $request->query('per_page', 15);
         $items = $this->stockMovementService->get($filters, [], $request->query('sort'), $request->query('direction', 'asc'), $perPage);
 
-        return response()->json([
-            'data' => $items->getCollection()->map(fn ($item) => [
-                'id' => $item->id ?? '',
-                'type' => $item->type ?? '',
-                'quantity_change' => $item->quantity_change ?? '',
-                'created_at' => $item->created_at?->format('Y-m-d H:i:s') ?? '',
-                'actions' => [
-                    'show' => route('stock-movements.show', $item->id),
-                ],
-            ])->toArray(),
-            'meta' => [
-                'current_page' => $items->currentPage(),
-                'last_page' => $items->lastPage(),
-                'per_page' => $items->perPage(),
-                'total' => $items->total(),
+        $data = $items->getCollection()->map(fn ($item) => [
+            'id' => $item->id ?? '',
+            'type' => $item->type ?? '',
+            'quantity_change' => $item->quantity_change ?? '',
+            'created_at' => $item->formatted_created_at ?? '',
+            'actions' => [
+                'show' => route('stock-movements.show', $item->id),
             ],
-        ]);
+        ])->toArray();
+
+        return new PaginatedResponse($data, $items);
     }
 
     public function show($id)
