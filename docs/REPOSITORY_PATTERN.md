@@ -1161,6 +1161,65 @@ class ProductService
 }
 ```
 
+### 9. Queries Only Happen in the Repository
+
+All Eloquent query building — `where`, `whereHas`, `groupBy`, `orderBy`, aggregates (`sum`, `count`), joins, etc. — must live in a Repository method. Services must call a repository method to get data; they must never build or execute a query against a Model directly.
+
+```php
+// ❌ AVOID - Service querying a Model directly
+class ReportService
+{
+    public function salesTotals(Carbon $dateFrom, Carbon $dateTo): array
+    {
+        $query = Transaction::query()
+            ->where('status', TransactionStatus::Completed)
+            ->whereBetween('created_at', [$dateFrom, $dateTo]);
+
+        return [
+            'totalSales' => (float) $query->clone()->sum('total'),
+            'totalTransactions' => $query->clone()->count(),
+        ];
+    }
+}
+```
+
+```php
+// ✅ GOOD - Query lives in the repository; the service only orchestrates
+class TransactionRepository implements TransactionRepositoryInterface
+{
+    public function salesTotals(Carbon $dateFrom, Carbon $dateTo): array
+    {
+        $query = Transaction::query()
+            ->where('status', TransactionStatus::Completed)
+            ->whereBetween('created_at', [$dateFrom, $dateTo]);
+
+        return [
+            'totalSales' => (float) $query->clone()->sum('total'),
+            'totalTransactions' => $query->clone()->count(),
+        ];
+    }
+}
+
+class ReportService
+{
+    protected $transactionRepository;
+
+    public function __construct(TransactionRepositoryInterface $transactionRepository)
+    {
+        $this->transactionRepository = $transactionRepository;
+    }
+
+    public function salesTotals(Carbon $dateFrom, Carbon $dateTo): array
+    {
+        return $this->transactionRepository->salesTotals($dateFrom, $dateTo);
+    }
+}
+```
+
+If an existing repository method doesn't fit a new read/aggregate need, add a new method to that entity's repository (and its interface) rather than reaching for the Model from a Service, Controller, or another Repository. This keeps every query discoverable in one place per entity and keeps [rule 7](#7-a-repository-must-only-touch-its-own-model) (one repository, one model) intact.
+
+**Why:** if query logic is scattered across services, there is no single place to look when a query needs to change, no way to swap the data source per rule 2, and no way to unit-test query logic in isolation from business logic.
+
 ---
 
 ## Testing
