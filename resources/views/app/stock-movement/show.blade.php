@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', $item->product_id ?? __('View Stock Movements'))
+@section('title', $item->product->name ?? __('View Stock Movements'))
 
 @php
-    $topbarTitle = $item->product_id ?? __('View Stock Movements');
+    $topbarTitle = $item->product->name ?? __('View Stock Movements');
 @endphp
 
 @section('app-content')
@@ -18,14 +18,14 @@
                     </a>
                 </li>
                 <li class="text-gray-400">/</li>
-                <li class="text-gray-900 dark:text-white">{{ $item->type?->label() ?? $item->id }}</li>
+                <li class="text-gray-900 dark:text-white">{{ $item->product->name ?? $item->id }}</li>
             </ol>
         </nav>
 
         <!-- Header -->
         <div class="mb-6">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-                {{ $item->product_id ?? __('View Stock Movements') }}
+                {{ $item->product->name ?? __('View Stock Movements') }}
             </h1>
             <p class="mt-2 text-gray-600 dark:text-gray-400">
                 {{ __('Details for this record') }}
@@ -45,9 +45,9 @@
                     <div class="px-6">
                         <dl class="divide-y divide-gray-200 dark:divide-gray-700">
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
-          <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Product Id')</dt>
+          <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('Product')</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-            {{ $item->product_id }}
+            {{ $item->product->name ?? '-' }}
           </dd>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
@@ -69,9 +69,9 @@
           </dd>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 py-4">
-          <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('User Id')</dt>
+          <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">@lang('User')</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-            {{ $item->user_id }}
+            {{ $item->user->name ?? '-' }}
           </dd>
         </div>
                         </dl>

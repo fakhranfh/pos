@@ -57,7 +57,7 @@ class StockMovementController extends Controller
 
     public function show($id)
     {
-        $item = $this->stockMovementService->find($id);
+        $item = $this->stockMovementService->find($id)->load(['product', 'user']);
         $foreignData = $this->foreignData();
 
         return view('app.stock-movement.show', [
