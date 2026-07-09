@@ -36,6 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('categories', CategoryController::class);
 
     Route::get('products/data/list', [ProductController::class, 'list'])->name('products.list');
+    Route::get('products/low-stock', [ProductController::class, 'lowStock'])->name('products.low-stock');
     Route::resource('products', ProductController::class);
 
     Route::get('stock-movements/data/list', [StockMovementController::class, 'list'])->name('stock-movements.list');

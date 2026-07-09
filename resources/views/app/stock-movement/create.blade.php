@@ -55,7 +55,7 @@
           <select id="product_id" name="product_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required @if(isset($isView)) disabled @endif>
             <option value="">-- @lang('Select') --</option>
             @foreach ($products as $product)
-              <option value="{{ $product->id }}" {{ (isset($item) && $item->product_id == $product->id) || old('product_id') == $product->id ? 'selected' : '' }}>
+              <option value="{{ $product->id }}" {{ (isset($item) && $item->product_id == $product->id) || old('product_id', request('product_id')) == $product->id ? 'selected' : '' }}>
                 {{ $product->name }}
               </option>
             @endforeach

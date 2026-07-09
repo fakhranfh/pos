@@ -63,6 +63,13 @@ class ProductController extends Controller
         ]);
     }
 
+    public function lowStock()
+    {
+        return view('app.product.low-stock', [
+            'items' => $this->productService->lowStock(),
+        ]);
+    }
+
     public function show($id)
     {
         $item = $this->productService->find($id);

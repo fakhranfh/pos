@@ -23,13 +23,19 @@ return [
         'label' => 'Products',
         'route' => 'products.index',
         'icon' => 'shopping_cart',
-        'active_pattern' => 'products.*',
+        'active_pattern' => ['products.index', 'products.create', 'products.store', 'products.show', 'products.edit', 'products.update', 'products.destroy'],
     ],
     [
         'label' => 'Stock Movements',
         'route' => 'stock-movements.index',
         'icon' => 'inventory',
         'active_pattern' => 'stock-movements.*',
+    ],
+    [
+        'label' => 'Low Stock Alerts',
+        'route' => 'products.low-stock',
+        'icon' => 'warning',
+        'active_pattern' => 'products.low-stock',
     ],
     [
         'label' => 'Transactions',
