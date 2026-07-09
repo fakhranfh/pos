@@ -22,5 +22,5 @@ interface ProductRepositoryInterface
 
     public function lowStock();
 
-    public function searchAvailable(string $term = '', int $perPage = 20);
+    public function searchAvailable(string $term = '', int $perPage = 20, array $options = []);
 }

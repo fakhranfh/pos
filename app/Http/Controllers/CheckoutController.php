@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Checkout\StoreCheckoutRequest;
+use App\Services\CategoryService;
 use App\Services\ProductService;
 use App\Services\TransactionService;
 use Illuminate\Http\Request;
@@ -14,22 +15,42 @@ class CheckoutController extends Controller
 
     protected $transactionService;
 
+    protected $categoryService;
+
     public function __construct(
         ProductService $productService,
         TransactionService $transactionService,
+        CategoryService $categoryService,
     ) {
         $this->productService = $productService;
         $this->transactionService = $transactionService;
+        $this->categoryService = $categoryService;
     }
 
     public function index()
     {
-        return view('checkout.index');
+        return view('checkout.index', [
+            'categories' => $this->categoryService->getAll(),
+        ]);
     }
 
     public function search(Request $request)
     {
-        $products = $this->productService->searchAvailable((string) $request->query('q', ''), 10);
+        $categoryId = $request->query('category_id');
+        $priceMin = $request->query('price_min');
+        $priceMax = $request->query('price_max');
+
+        $products = $this->productService->searchAvailable(
+            (string) $request->query('q', ''),
+            10,
+            [
+                'category_id' => $categoryId !== null && $categoryId !== '' ? (int) $categoryId : null,
+                'price_min' => $priceMin !== null && $priceMin !== '' ? (float) $priceMin : null,
+                'price_max' => $priceMax !== null && $priceMax !== '' ? (float) $priceMax : null,
+                'sort' => (string) $request->query('sort', 'name'),
+                'direction' => (string) $request->query('direction', 'asc'),
+            ],
+        );
 
         return response()->json([
             'data' => $products->map(fn ($product) => [

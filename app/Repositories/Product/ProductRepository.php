@@ -84,8 +84,20 @@ class ProductRepository implements ProductRepositoryInterface
             ->get();
     }
 
-    public function searchAvailable(string $term = '', int $perPage = 20)
+    public function searchAvailable(string $term = '', int $perPage = 20, array $options = [])
     {
+        $categoryId = $options['category_id'] ?? null;
+        $priceMin = $options['price_min'] ?? null;
+        $priceMax = $options['price_max'] ?? null;
+        $sort = $options['sort'] ?? 'name';
+        $direction = $options['direction'] ?? 'asc';
+
+        $sortable = ['name', 'price', 'stock'];
+        if (! in_array($sort, $sortable, true)) {
+            $sort = 'name';
+        }
+        $direction = strtolower($direction) === 'desc' ? 'desc' : 'asc';
+
         return Product::query()
             ->with('category')
             ->where('is_active', true)
@@ -96,7 +108,10 @@ class ProductRepository implements ProductRepositoryInterface
                         ->orWhere('sku', 'like', "%{$term}%");
                 });
             })
-            ->orderBy('name')
+            ->when($categoryId !== null, fn ($query) => $query->where('category_id', $categoryId))
+            ->when($priceMin !== null, fn ($query) => $query->where('price', '>=', $priceMin))
+            ->when($priceMax !== null, fn ($query) => $query->where('price', '<=', $priceMax))
+            ->orderBy($sort, $direction)
             ->simplePaginate($perPage);
     }
 }
