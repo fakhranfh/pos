@@ -22,6 +22,12 @@ class TransactionRepository implements TransactionRepositoryInterface
                 continue;
             }
 
+            if ($key === 'invoice_number') {
+                $query->where('invoice_number', 'like', "%{$value}%");
+
+                continue;
+            }
+
             $query->where($key, $value);
         }
 
