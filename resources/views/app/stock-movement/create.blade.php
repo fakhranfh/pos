@@ -91,20 +91,6 @@
             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
           @enderror
         </div>
-        <div class="mb-4">
-          <label for="user_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">@lang('User Id')</label>
-          <select id="user_id" name="user_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required @if(isset($isView)) disabled @endif>
-            <option value="">-- @lang('Select') --</option>
-            @foreach ($users as $user)
-              <option value="{{ $user->id }}" {{ (isset($item) && $item->user_id == $user->id) || old('user_id') == $user->id ? 'selected' : '' }}>
-                {{ $user->name }}
-              </option>
-            @endforeach
-          </select>
-          @error('user_id')
-            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-          @enderror
-        </div>
 
                 <!-- Submit Buttons -->
                 <div class="flex gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">

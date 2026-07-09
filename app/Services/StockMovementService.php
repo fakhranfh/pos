@@ -44,14 +44,4 @@ class StockMovementService
             return $this->stockMovementRepository->create($data);
         });
     }
-
-    public function update($id, array $data)
-    {
-        return $this->stockMovementRepository->update($id, $data);
-    }
-
-    public function delete($id)
-    {
-        return $this->stockMovementRepository->delete($id);
-    }
 }

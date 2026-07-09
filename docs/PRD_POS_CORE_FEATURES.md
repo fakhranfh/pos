@@ -207,6 +207,8 @@ StockMovement records track every change to product inventory and create an immu
 
 All movements update the Product's `stock` field atomically and provide full traceability for inventory audits and investigations.
 
+**Immutability:** Stock movements are write-once records and cannot be edited or deleted after creation. If a movement is recorded incorrectly, the correction must be done via a new `adjustment` movement with a reason explaining the correction, preserving the full audit trail.
+
 ```typescript
 interface Transaction {
   id: string;

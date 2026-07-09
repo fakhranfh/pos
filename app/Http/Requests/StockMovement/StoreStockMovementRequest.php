@@ -17,8 +17,7 @@ class StoreStockMovementRequest extends FormRequest
             'product_id' => 'required|integer|exists:products,id',
             'type' => 'required|in:sale,stock_in,adjustment,return',
             'quantity_change' => 'required|integer',
-            'reason' => 'nullable|string',
-            'user_id' => 'required|integer|exists:users,id',
+            'reason' => 'required_if:type,adjustment|nullable|string',
         ];
     }
 }

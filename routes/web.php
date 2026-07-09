@@ -39,7 +39,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('products', ProductController::class);
 
     Route::get('stock-movements/data/list', [StockMovementController::class, 'list'])->name('stock-movements.list');
-    Route::resource('stock-movements', StockMovementController::class);
+    Route::resource('stock-movements', StockMovementController::class)->only(['index', 'show', 'create', 'store']);
 
     Route::get('transactions/data/list', [TransactionController::class, 'list'])->name('transactions.list');
     Route::resource('transactions', TransactionController::class);

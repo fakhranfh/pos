@@ -47,17 +47,4 @@ class StockMovementRepository implements StockMovementRepositoryInterface
     {
         return StockMovement::create($data);
     }
-
-    public function update($id, array $data)
-    {
-        $model = StockMovement::findOrFail($id);
-        $model->update($data);
-
-        return $model;
-    }
-
-    public function delete($id)
-    {
-        return StockMovement::destroy($id);
-    }
 }

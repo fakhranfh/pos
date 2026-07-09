@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StockMovement\StoreStockMovementRequest;
-use App\Http\Requests\StockMovement\UpdateStockMovementRequest;
 use App\Models\User;
 use App\Services\ProductService;
 use App\Services\StockMovementService;
@@ -71,36 +70,8 @@ class StockMovementController extends Controller
 
     public function store(StoreStockMovementRequest $request)
     {
-        $item = $this->stockMovementService->create($request->validated());
+        $item = $this->stockMovementService->create($request->validated() + ['user_id' => $request->user()->id]);
 
         return redirect()->route('stock-movements.show', $item)->with('success', __('Stock Movements created successfully.'));
-    }
-
-    public function edit($id)
-    {
-        $item = $this->stockMovementService->find($id);
-        $foreignData = $this->foreignData();
-
-        return view('app.stock-movement.edit', [
-            'item' => $item,
-        ] + $foreignData);
-    }
-
-    public function update(UpdateStockMovementRequest $request, $id)
-    {
-        $this->stockMovementService->update($id, $request->validated());
-
-        return redirect()->route('stock-movements.show', $id)->with('success', __('Stock Movements updated successfully.'));
-    }
-
-    public function destroy($id)
-    {
-        $this->stockMovementService->delete($id);
-
-        if (request()->expectsJson()) {
-            return response()->json(['message' => __('Item deleted successfully.')]);
-        }
-
-        return redirect()->route('stock-movements.index')->with('success', __('Stock Movements deleted successfully.'));
     }
 }
