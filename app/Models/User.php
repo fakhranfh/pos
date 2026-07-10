@@ -53,6 +53,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->role === UserRole::Manager;
     }
 
+    public function isCashier(): bool
+    {
+        return $this->role === UserRole::Cashier;
+    }
+
     /**
      * Managers have every admin capability except RBAC/user management.
      */
