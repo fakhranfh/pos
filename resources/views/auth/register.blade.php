@@ -33,20 +33,6 @@
         <p class="text-error text-body-sm font-body-sm mt-space-xs">{{ $message }}</p>
         @enderror
     </div>
-    <!-- Role Select -->
-    <div>
-        <label class="block font-label-md text-label-md text-on-surface-variant mb-space-xxs" for="role">Role</label>
-        <div class="relative">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary pointer-events-none" style="font-size: 20px;">badge</span>
-            <select class="w-full bg-surface border border-outline-variant rounded-lg py-2 pl-10 pr-3 font-body-md text-body-md text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors h-11 appearance-none" id="role" name="role" required>
-                <option value="cashier" {{ old('role', 'cashier') === 'cashier' ? 'selected' : '' }}>Cashier</option>
-                <option value="manager" {{ old('role') === 'manager' ? 'selected' : '' }}>Manager</option>
-            </select>
-        </div>
-        @error('role')
-        <p class="text-error text-body-sm font-body-sm mt-space-xs">{{ $message }}</p>
-        @enderror
-    </div>
     <!-- Password Input -->
     <div>
         <label class="block font-label-md text-label-md text-on-surface-variant mb-space-xxs" for="password">Password</label>

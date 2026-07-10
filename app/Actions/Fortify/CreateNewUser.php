@@ -33,11 +33,6 @@ class CreateNewUser implements CreatesNewUsers
                 Rule::unique(User::class),
             ],
             'password' => $this->passwordRules(),
-            // Admin is deliberately not selectable here — the first admin
-            // is bootstrapped via the seed_default_admin_user migration,
-            // and every other admin is promoted from the user management
-            // screen, never self-assigned at registration.
-            'role' => ['required', Rule::in([UserRole::Manager->value, UserRole::Cashier->value])],
         ])->validate();
 
         $user = User::create([
@@ -46,9 +41,12 @@ class CreateNewUser implements CreatesNewUsers
             'password' => Hash::make($input['password']),
         ]);
 
+        // Self-registration only ever grants the lowest-privilege role.
+        // Promotion to Manager/Admin is exclusively done by an existing
+        // admin through the authenticated /users management screen —
         // `role` is deliberately excluded from User's mass-assignable
         // attributes, so it's set explicitly here rather than via create().
-        $user->role = UserRole::from($input['role']);
+        $user->role = UserRole::Cashier;
         $user->save();
 
         return $user;

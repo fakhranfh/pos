@@ -87,7 +87,7 @@ class CheckoutController extends Controller
         $transaction = $this->transactionService->find($id);
 
         abort_if(! $transaction, 404);
-        abort_if(! $request->user()->canManageOperations() && $transaction->cashier_id !== $request->user()->id, 403);
+        abort_if(! $request->user()->canManageOperations() && (int) $transaction->cashier_id !== (int) $request->user()->id, 403);
 
         $transaction->load(['items', 'cashier']);
 

@@ -32,6 +32,12 @@ class UserService
             ]);
         }
 
+        if ($target->role === UserRole::Admin && $role !== UserRole::Admin && User::where('role', UserRole::Admin)->count() <= 1) {
+            throw ValidationException::withMessages([
+                'role' => __('You cannot remove the last remaining admin.'),
+            ]);
+        }
+
         return $this->userRepository->updateRole($target, $role);
     }
 

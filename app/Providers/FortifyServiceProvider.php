@@ -8,10 +8,12 @@ use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
 use App\Http\Responses\CustomPasswordResetLinkResponse;
 use App\Http\Responses\CustomPasswordResetResponse;
+use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -35,6 +37,19 @@ class FortifyServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Fortify::createUsersUsing(CreateNewUser::class);
+        Fortify::authenticateUsing(function (Request $request) {
+            $user = User::where(Fortify::username(), $request->input(Fortify::username()))->first();
+
+            // Always run a hash comparison against a real bcrypt hash, even
+            // when no user matches, so response timing can't be used to
+            // enumerate registered emails.
+            $passwordMatches = Hash::check(
+                (string) $request->input('password'),
+                $user->password ?? self::dummyPasswordHash(),
+            );
+
+            return $user && $passwordMatches ? $user : null;
+        });
         Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
@@ -79,5 +94,14 @@ class FortifyServiceProvider extends ServiceProvider
 
             return Limit::perMinute(5)->by($throttleKey);
         });
+    }
+
+    /**
+     * A fixed, precomputed bcrypt hash used only to keep the "user not
+     * found" login path's timing comparable to a real password check.
+     */
+    private static function dummyPasswordHash(): string
+    {
+        return '$2y$12$C6UzMDM.H6dfI/f/IKcEeOh27j5CKn0oSXfsHtA9x9vsdKZAxCNQK';
     }
 }
