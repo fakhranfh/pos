@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\UserRole;
+use App\Models\Concerns\HasFormattedTimestamps;
 use Database\Factories\UserFactory;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -17,7 +18,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use CanResetPassword, HasFactory, Notifiable;
+    use CanResetPassword, HasFactory, HasFormattedTimestamps, Notifiable;
 
     /**
      * Get the attributes that should be cast.
@@ -45,5 +46,18 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isAdmin(): bool
     {
         return $this->role === UserRole::Admin;
+    }
+
+    public function isManager(): bool
+    {
+        return $this->role === UserRole::Manager;
+    }
+
+    /**
+     * Managers have every admin capability except RBAC/user management.
+     */
+    public function canManageOperations(): bool
+    {
+        return $this->isAdmin() || $this->isManager();
     }
 }

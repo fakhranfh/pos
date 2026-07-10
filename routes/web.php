@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -38,9 +39,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('checkout/{transaction}/receipt', [CheckoutController::class, 'receipt'])->name('checkout.receipt');
 
-    // Inventory management, ledger review, and reporting are admin-only;
-    // cashiers are limited to the checkout flow above.
-    Route::middleware('admin')->group(function () {
+    // Inventory management, ledger review, and reporting are open to admins
+    // and managers; cashiers are limited to the checkout flow above.
+    Route::middleware('manager')->group(function () {
         Route::get('categories/data/list', [CategoryController::class, 'list'])->name('categories.list');
         Route::resource('categories', CategoryController::class);
 
@@ -57,6 +58,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('reports/sales/data/list', [ReportController::class, 'salesProducts'])->name('reports.sales.products');
         Route::get('reports/sales/data/totals', [ReportController::class, 'salesTotals'])->name('reports.sales.totals');
         Route::get('reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
+    });
+
+    // RBAC/user management is admin-only; managers do not get this.
+    Route::middleware('admin')->group(function () {
+        Route::get('users/data/list', [UserController::class, 'list'])->name('users.list');
+        Route::get('users', [UserController::class, 'index'])->name('users.index');
+        Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+        Route::put('users/{user}', [UserController::class, 'update'])->name('users.update');
     });
 });
 

@@ -2,15 +2,38 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Mail\PendingEmailVerificationMail;
 use App\Models\User;
 use App\Repositories\User\UserRepositoryInterface;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\ValidationException;
 
 class UserService
 {
     public function __construct(private UserRepositoryInterface $userRepository) {}
+
+    public function get(array $filters = [], ?string $sort = null, string $direction = 'asc', int $perPage = 15)
+    {
+        return $this->userRepository->get($filters, [], $sort, $direction, $perPage);
+    }
+
+    public function find($id): ?User
+    {
+        return $this->userRepository->find($id);
+    }
+
+    public function updateRole(User $actor, User $target, UserRole $role): User
+    {
+        if ($actor->is($target) && $role !== UserRole::Admin) {
+            throw ValidationException::withMessages([
+                'role' => __('You cannot remove your own admin role.'),
+            ]);
+        }
+
+        return $this->userRepository->updateRole($target, $role);
+    }
 
     public function updateProfile(User $user, array $data): User
     {

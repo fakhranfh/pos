@@ -22,6 +22,7 @@ test('user can register with valid data', function () {
         'email' => 'john@example.com',
         'password' => 'Secret!Pass123#Secure',
         'password_confirmation' => 'Secret!Pass123#Secure',
+        'role' => 'cashier',
     ]);
 
     $response->assertRedirect('/dashboard');
@@ -39,9 +40,44 @@ test('a self-registered account defaults to the cashier role, not admin', functi
         'email' => 'john@example.com',
         'password' => 'Secret!Pass123#Secure',
         'password_confirmation' => 'Secret!Pass123#Secure',
+        'role' => 'cashier',
     ]);
 
     expect(User::where('email', 'john@example.com')->first()->role)->toBe(UserRole::Cashier);
+});
+
+test('a user can register as a manager', function () {
+    $this->post('/register', [
+        'name' => 'Mona Manager',
+        'email' => 'mona@example.com',
+        'password' => 'Secret!Pass123#Secure',
+        'password_confirmation' => 'Secret!Pass123#Secure',
+        'role' => 'manager',
+    ])->assertRedirect('/dashboard');
+
+    expect(User::where('email', 'mona@example.com')->first()->role)->toBe(UserRole::Manager);
+});
+
+test('registration rejects a self-assigned admin role', function () {
+    $this->post('/register', [
+        'name' => 'John Doe',
+        'email' => 'john@example.com',
+        'password' => 'Secret!Pass123#Secure',
+        'password_confirmation' => 'Secret!Pass123#Secure',
+        'role' => 'admin',
+    ])->assertSessionHasErrors('role');
+
+    $this->assertGuest();
+    $this->assertDatabaseMissing('users', ['email' => 'john@example.com']);
+});
+
+test('registration requires a role', function () {
+    $this->post('/register', [
+        'name' => 'John Doe',
+        'email' => 'john@example.com',
+        'password' => 'Secret!Pass123#Secure',
+        'password_confirmation' => 'Secret!Pass123#Secure',
+    ])->assertSessionHasErrors('role');
 });
 
 test('registering stores the timezone resolved from the request IP', function () {
@@ -50,6 +86,7 @@ test('registering stores the timezone resolved from the request IP', function ()
         'email' => 'john@example.com',
         'password' => 'Secret!Pass123#Secure',
         'password_confirmation' => 'Secret!Pass123#Secure',
+        'role' => 'cashier',
     ], [], [], ['REMOTE_ADDR' => '8.8.8.8'])->assertRedirect('/dashboard');
 
     $this->call('GET', '/dashboard', server: ['REMOTE_ADDR' => '8.8.8.8']);
@@ -65,6 +102,7 @@ test('registering from a private/loopback IP still resolves a timezone', functio
         'email' => 'jane@example.com',
         'password' => 'Secret!Pass123#Secure',
         'password_confirmation' => 'Secret!Pass123#Secure',
+        'role' => 'cashier',
     ])->assertRedirect('/dashboard');
 
     $this->get('/dashboard');

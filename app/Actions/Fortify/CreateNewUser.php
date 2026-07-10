@@ -2,6 +2,7 @@
 
 namespace App\Actions\Fortify;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -32,12 +33,24 @@ class CreateNewUser implements CreatesNewUsers
                 Rule::unique(User::class),
             ],
             'password' => $this->passwordRules(),
+            // Admin is deliberately not selectable here — the first admin
+            // is bootstrapped via the seed_default_admin_user migration,
+            // and every other admin is promoted from the user management
+            // screen, never self-assigned at registration.
+            'role' => ['required', Rule::in([UserRole::Manager->value, UserRole::Cashier->value])],
         ])->validate();
 
-        return User::create([
+        $user = User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
         ]);
+
+        // `role` is deliberately excluded from User's mass-assignable
+        // attributes, so it's set explicitly here rather than via create().
+        $user->role = UserRole::from($input['role']);
+        $user->save();
+
+        return $user;
     }
 }

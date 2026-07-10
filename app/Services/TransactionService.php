@@ -107,7 +107,7 @@ class TransactionService
                 ]);
 
                 if ($product->stock <= $product->low_stock_threshold && $this->shouldSendLowStockAlert($product)) {
-                    Notification::send(User::where('role', UserRole::Admin)->get(), new LowStockAlert($product));
+                    Notification::send(User::whereIn('role', [UserRole::Admin, UserRole::Manager])->get(), new LowStockAlert($product));
                 }
             }
 

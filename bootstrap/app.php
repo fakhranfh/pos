@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureUserCanManageOperations;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\PreservePasswordUpdateErrors;
 use App\Http\Middleware\ResolveUserTimezone;
@@ -23,7 +24,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(PreservePasswordUpdateErrors::class);
         $middleware->append(SecurityHeaders::class);
         $middleware->web(append: [ResolveUserTimezone::class]);
-        $middleware->alias(['admin' => EnsureUserIsAdmin::class]);
+        $middleware->alias([
+            'admin' => EnsureUserIsAdmin::class,
+            'manager' => EnsureUserCanManageOperations::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
