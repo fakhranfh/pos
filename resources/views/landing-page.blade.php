@@ -59,13 +59,15 @@
                                 Go to Dashboard
                             </a>
                         @else
-                            <a href="{{ route('register') }}" class="flex min-h-[44px] items-center rounded bg-primary px-space-lg font-label-md text-label-md text-on-primary hover:bg-primary-container focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-colors">
-                                Create My Free Account
+                            <a href="{{ Route::has('register') ? route('register') : route('login') }}" class="flex min-h-[44px] items-center rounded bg-primary px-space-lg font-label-md text-label-md text-on-primary hover:bg-primary-container focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-colors">
+                                {{ Route::has('register') ? 'Create My Free Account' : 'Log In' }}
                             </a>
-                            <a href="{{ route('login') }}" class="group inline-flex items-center gap-space-xs font-label-md text-label-md text-on-surface hover:text-primary transition-colors">
-                                Already have an account?
-                                <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true">&rarr;</span>
-                            </a>
+                            @if (Route::has('register'))
+                                <a href="{{ route('login') }}" class="group inline-flex items-center gap-space-xs font-label-md text-label-md text-on-surface hover:text-primary transition-colors">
+                                    Already have an account?
+                                    <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true">&rarr;</span>
+                                </a>
+                            @endif
                         @endauth
                     </div>
                     <p class="mt-space-sm font-body-sm text-body-sm text-on-surface-variant">No setup fees. Set up in one afternoon.</p>
@@ -292,8 +294,8 @@
                                 Go to Dashboard
                             </a>
                         @else
-                            <a href="{{ route('register') }}" class="flex min-h-[44px] items-center rounded bg-primary px-space-lg font-label-md text-label-md text-on-primary hover:bg-primary-container focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-colors">
-                                Create My Free Account
+                            <a href="{{ Route::has('register') ? route('register') : route('login') }}" class="flex min-h-[44px] items-center rounded bg-primary px-space-lg font-label-md text-label-md text-on-primary hover:bg-primary-container focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-colors">
+                                {{ Route::has('register') ? 'Create My Free Account' : 'Log In' }}
                             </a>
                         @endauth
                     </div>
