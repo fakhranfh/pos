@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Responses\PaginatedResponse;
 use App\Services\ReportService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ReportController extends Controller
 {
@@ -37,7 +38,11 @@ class ReportController extends Controller
 
     public function salesTotals(Request $request)
     {
-        $request->validate($this->dateRangeRules());
+        $validator = Validator::make($request->query(), $this->dateRangeRules());
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()->first(), 'errors' => $validator->errors()], 422);
+        }
 
         return response()->json($this->reportService->salesTotals(
             $request->query('date_from'),

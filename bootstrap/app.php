@@ -5,6 +5,7 @@ use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\PreservePasswordUpdateErrors;
 use App\Http\Middleware\ResolveUserTimezone;
 use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\ThrottleRegistration;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -23,7 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->append(PreservePasswordUpdateErrors::class);
         $middleware->append(SecurityHeaders::class);
-        $middleware->web(append: [ResolveUserTimezone::class]);
+        $middleware->web(append: [ResolveUserTimezone::class, ThrottleRegistration::class]);
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
             'manager' => EnsureUserCanManageOperations::class,
