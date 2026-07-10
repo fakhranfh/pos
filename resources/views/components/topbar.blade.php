@@ -57,7 +57,10 @@
                     </div>
                 @endif
                 <div class="text-left hidden sm:block">
-                    <p class="font-label-md text-label-md text-on-surface">{{ auth()->user()->name }}</p>
+                    <p class="font-label-md text-label-md text-on-surface flex items-center gap-space-xs">
+                        {{ auth()->user()->name }}
+                        <span class="px-space-xs py-px rounded-full bg-primary/10 text-primary font-label-sm text-label-sm">{{ auth()->user()->role->label() }}</span>
+                    </p>
                     <p class="font-body-sm text-body-sm text-secondary">{{ auth()->user()->email }}</p>
                 </div>
                 <span class="material-symbols-outlined text-secondary hidden sm:block">expand_more</span>
@@ -66,7 +69,10 @@
             <!-- Dropdown Menu -->
             <div id="user-dropdown" dusk="user-dropdown" data-open="false" class="absolute right-0 mt-0 w-56 bg-surface rounded-xl border border-outline-variant shadow-[0_8px_24px_rgba(0,0,0,0.12)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 overflow-hidden">
                 <div class="px-space-lg py-space-md border-b border-outline-variant sm:hidden">
-                    <p class="font-label-md text-label-md text-on-surface">{{ auth()->user()->name }}</p>
+                    <p class="font-label-md text-label-md text-on-surface flex items-center gap-space-xs">
+                        {{ auth()->user()->name }}
+                        <span class="px-space-xs py-px rounded-full bg-primary/10 text-primary font-label-sm text-label-sm">{{ auth()->user()->role->label() }}</span>
+                    </p>
                     <p class="font-body-sm text-body-sm text-secondary mt-space-xs">{{ auth()->user()->email }}</p>
                 </div>
                 <a href="{{ route('edit-profile') }}" class="flex items-center gap-space-md px-space-lg py-space-md text-secondary hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150 border-b border-outline-variant">
