@@ -1,32 +1,15 @@
 <?php
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Route;
 
-// Prevent actual HTTP requests to the Pwned Passwords API during tests.
-// FEATURE_REGISTRATION_ENABLED is forced on for the whole test suite (see
-// phpunit.xml) since these tests exercise the /register flow; production
-// defaults it off (see Finding 1 in the pentest report).
+// Prevent actual HTTP requests to the Pwned Passwords API during tests
 beforeEach(function () {
     Http::fake([
         'api.pwnedpasswords.com/*' => Http::response('', 200),
         'ip-api.com/*' => Http::response(['status' => 'success', 'timezone' => 'Asia/Jakarta'], 200),
     ]);
-});
-
-test('registration routes are not registered when the feature flag is off', function () {
-    putenv('FEATURE_REGISTRATION_ENABLED=false');
-    $_ENV['FEATURE_REGISTRATION_ENABLED'] = 'false';
-    $_SERVER['FEATURE_REGISTRATION_ENABLED'] = 'false';
-    $this->refreshApplication();
-
-    expect(Route::has('register'))->toBeFalse();
-    $this->get('/register')->assertNotFound();
-
-    putenv('FEATURE_REGISTRATION_ENABLED=true');
-    $_ENV['FEATURE_REGISTRATION_ENABLED'] = 'true';
-    $_SERVER['FEATURE_REGISTRATION_ENABLED'] = 'true';
 });
 
 test('registration page can be rendered', function () {
@@ -48,6 +31,17 @@ test('user can register with valid data', function () {
         'name' => 'John Doe',
         'email' => 'john@example.com',
     ]);
+});
+
+test('a self-registered account defaults to the cashier role, not admin', function () {
+    $this->post('/register', [
+        'name' => 'John Doe',
+        'email' => 'john@example.com',
+        'password' => 'Secret!Pass123#Secure',
+        'password_confirmation' => 'Secret!Pass123#Secure',
+    ]);
+
+    expect(User::where('email', 'john@example.com')->first()->role)->toBe(UserRole::Cashier);
 });
 
 test('registering stores the timezone resolved from the request IP', function () {

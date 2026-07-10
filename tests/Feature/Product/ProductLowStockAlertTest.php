@@ -4,7 +4,7 @@ use App\Models\Product;
 use App\Models\User;
 
 beforeEach(function () {
-    $this->actingAs(User::factory()->create());
+    $this->actingAs(User::factory()->admin()->create());
 });
 
 test('low stock page lists products at or below their threshold', function () {

@@ -32,6 +32,7 @@ test('a low stock notification is sent when remaining stock equals the threshold
 
     $product = createLowStockTestProduct(stock: 10, threshold: 7);
     $cashier = User::factory()->create();
+    $admin = User::factory()->admin()->create();
 
     app(TransactionService::class)->checkout([
         'items' => [
@@ -46,7 +47,8 @@ test('a low stock notification is sent when remaining stock equals the threshold
 
     expect($product->fresh()->stock)->toBe(7);
 
-    Notification::assertSentTo($cashier, LowStockAlert::class);
+    Notification::assertSentTo($admin, LowStockAlert::class);
+    Notification::assertNotSentTo($cashier, LowStockAlert::class);
 });
 
 test('no low stock notification is sent when remaining stock is still above the threshold', function () {
@@ -54,6 +56,7 @@ test('no low stock notification is sent when remaining stock is still above the 
 
     $product = createLowStockTestProduct(stock: 10, threshold: 5);
     $cashier = User::factory()->create();
+    $admin = User::factory()->admin()->create();
 
     app(TransactionService::class)->checkout([
         'items' => [
@@ -68,7 +71,7 @@ test('no low stock notification is sent when remaining stock is still above the 
 
     expect($product->fresh()->stock)->toBe(7);
 
-    Notification::assertNotSentTo($cashier, LowStockAlert::class);
+    Notification::assertNotSentTo($admin, LowStockAlert::class);
 });
 
 test('a low stock notification is sent when stock drops past the threshold in one sale', function () {
@@ -76,6 +79,7 @@ test('a low stock notification is sent when stock drops past the threshold in on
 
     $product = createLowStockTestProduct(stock: 10, threshold: 5);
     $cashier = User::factory()->create();
+    $admin = User::factory()->admin()->create();
 
     app(TransactionService::class)->checkout([
         'items' => [
@@ -90,7 +94,7 @@ test('a low stock notification is sent when stock drops past the threshold in on
 
     expect($product->fresh()->stock)->toBe(2);
 
-    Notification::assertSentTo($cashier, LowStockAlert::class);
+    Notification::assertSentTo($admin, LowStockAlert::class);
 });
 
 test('a low stock notification is sent again when stock was already at or below the threshold before the sale', function () {
@@ -98,6 +102,7 @@ test('a low stock notification is sent again when stock was already at or below 
 
     $product = createLowStockTestProduct(stock: 5, threshold: 5);
     $cashier = User::factory()->create();
+    $admin = User::factory()->admin()->create();
 
     app(TransactionService::class)->checkout([
         'items' => [
@@ -112,7 +117,7 @@ test('a low stock notification is sent again when stock was already at or below 
 
     expect($product->fresh()->stock)->toBe(4);
 
-    Notification::assertSentTo($cashier, LowStockAlert::class);
+    Notification::assertSentTo($admin, LowStockAlert::class);
 });
 
 test('a second low-stock-triggering checkout for the same product within the cooldown window does not send another notification', function () {
@@ -120,6 +125,7 @@ test('a second low-stock-triggering checkout for the same product within the coo
 
     $product = createLowStockTestProduct(stock: 10, threshold: 8);
     $cashier = User::factory()->create();
+    $admin = User::factory()->admin()->create();
 
     $checkout = fn () => app(TransactionService::class)->checkout([
         'items' => [
@@ -135,5 +141,5 @@ test('a second low-stock-triggering checkout for the same product within the coo
     $checkout();
     $checkout();
 
-    Notification::assertSentToTimes($cashier, LowStockAlert::class, 1);
+    Notification::assertSentToTimes($admin, LowStockAlert::class, 1);
 });

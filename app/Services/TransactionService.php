@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\Product;
 use App\Models\User;
 use App\Notifications\LowStockAlert;
@@ -106,7 +107,7 @@ class TransactionService
                 ]);
 
                 if ($product->stock <= $product->low_stock_threshold && $this->shouldSendLowStockAlert($product)) {
-                    Notification::send(User::all(), new LowStockAlert($product));
+                    Notification::send(User::where('role', UserRole::Admin)->get(), new LowStockAlert($product));
                 }
             }
 

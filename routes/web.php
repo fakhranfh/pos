@@ -38,22 +38,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('checkout/{transaction}/receipt', [CheckoutController::class, 'receipt'])->name('checkout.receipt');
 
-    Route::get('categories/data/list', [CategoryController::class, 'list'])->name('categories.list');
-    Route::resource('categories', CategoryController::class);
+    // Inventory management, ledger review, and reporting are admin-only;
+    // cashiers are limited to the checkout flow above.
+    Route::middleware('admin')->group(function () {
+        Route::get('categories/data/list', [CategoryController::class, 'list'])->name('categories.list');
+        Route::resource('categories', CategoryController::class);
 
-    Route::get('products/data/list', [ProductController::class, 'list'])->name('products.list');
-    Route::get('products/low-stock', [ProductController::class, 'lowStock'])->name('products.low-stock');
-    Route::resource('products', ProductController::class);
+        Route::get('products/data/list', [ProductController::class, 'list'])->name('products.list');
+        Route::get('products/low-stock', [ProductController::class, 'lowStock'])->name('products.low-stock');
+        Route::resource('products', ProductController::class);
 
-    Route::get('stock-movements/data/list', [StockMovementController::class, 'list'])->name('stock-movements.list');
-    Route::resource('stock-movements', StockMovementController::class)->only(['index', 'show', 'create', 'store']);
+        Route::get('stock-movements/data/list', [StockMovementController::class, 'list'])->name('stock-movements.list');
+        Route::resource('stock-movements', StockMovementController::class)->only(['index', 'show', 'create', 'store']);
 
-    Route::get('transactions/data/list', [TransactionController::class, 'list'])->name('transactions.list');
-    Route::resource('transactions', TransactionController::class)->only(['index', 'show']);
+        Route::get('transactions/data/list', [TransactionController::class, 'list'])->name('transactions.list');
+        Route::resource('transactions', TransactionController::class)->only(['index', 'show']);
 
-    Route::get('reports/sales/data/list', [ReportController::class, 'salesProducts'])->name('reports.sales.products');
-    Route::get('reports/sales/data/totals', [ReportController::class, 'salesTotals'])->name('reports.sales.totals');
-    Route::get('reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
+        Route::get('reports/sales/data/list', [ReportController::class, 'salesProducts'])->name('reports.sales.products');
+        Route::get('reports/sales/data/totals', [ReportController::class, 'salesTotals'])->name('reports.sales.totals');
+        Route::get('reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
+    });
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');

@@ -5,7 +5,7 @@ use App\Models\Product;
 use App\Models\User;
 
 beforeEach(function () {
-    $this->actingAs(User::factory()->create());
+    $this->actingAs(User::factory()->admin()->create());
 });
 
 function createValidationTestProduct(): Product
@@ -62,7 +62,7 @@ test('sale-type movements cannot be submitted manually', function () {
 
 test('the authenticated user is recorded as the actor on creation', function () {
     $product = createValidationTestProduct();
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
     $this->actingAs($user);
 
     $response = $this->post(route('stock-movements.store'), [

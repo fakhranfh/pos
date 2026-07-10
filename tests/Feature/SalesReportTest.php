@@ -6,7 +6,7 @@ use App\Models\TransactionItem;
 use App\Models\User;
 
 beforeEach(function () {
-    $this->actingAs(User::factory()->create());
+    $this->actingAs(User::factory()->admin()->create());
 });
 
 test('sales report totals completed transactions and excludes voided ones within the date range', function () {

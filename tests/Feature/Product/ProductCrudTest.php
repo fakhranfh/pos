@@ -6,7 +6,7 @@ use App\Models\TransactionItem;
 use App\Models\User;
 
 beforeEach(function () {
-    $this->actingAs(User::factory()->create());
+    $this->actingAs(User::factory()->admin()->create());
 });
 
 test('admin can create a product with name, sku, price, category, and initial stock', function () {

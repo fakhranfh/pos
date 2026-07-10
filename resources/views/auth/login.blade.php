@@ -74,15 +74,13 @@
                 <span id="loginArrow" class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
             </button>
         </form>
-        @if (config('features.registration_enabled'))
-            <!-- Register Link -->
-            <div class="mt-space-xl text-center">
-                <p class="font-body-sm text-body-sm text-secondary">
-                    Don't have an account?
-                    <a class="text-primary font-medium hover:underline transition-colors" href="{{ route('register') }}">Register</a>
-                </p>
-            </div>
-        @endif
+        <!-- Register Link -->
+        <div class="mt-space-xl text-center">
+            <p class="font-body-sm text-body-sm text-secondary">
+                Don't have an account?
+                <a class="text-primary font-medium hover:underline transition-colors" href="{{ route('register') }}">Register</a>
+            </p>
+        </div>
     </div>
     <!-- Footer Component Execution -->
     <div class="fixed bottom-0 w-full py-space-xl border-t border-outline-variant bg-background flex flex-col items-center gap-space-sm px-gutter">
