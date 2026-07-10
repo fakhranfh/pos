@@ -17,9 +17,17 @@ class StoreStockMovementRequest extends FormRequest
     {
         return [
             'product_id' => 'required|integer|exists:products,id',
-            'type' => ['required', Rule::enum(StockMovementType::class)],
-            'quantity_change' => 'required|integer',
-            'reason' => 'required_if:type,adjustment|nullable|string',
+            // 'sale' movements are only ever created internally by
+            // TransactionService::checkout() when a real sale is recorded;
+            // allowing it here would let stock be marked "sold" with no
+            // corresponding transaction.
+            'type' => ['required', Rule::in([
+                StockMovementType::StockIn->value,
+                StockMovementType::Adjustment->value,
+                StockMovementType::Return->value,
+            ])],
+            'quantity_change' => 'required|integer|not_in:0|min:-100000|max:100000',
+            'reason' => 'required_if:type,adjustment|nullable|string|max:1000',
         ];
     }
 }

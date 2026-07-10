@@ -143,7 +143,7 @@ return [
     */
 
     'features' => array_filter([
-        Features::registration(),
+        config('features.registration_enabled') ? Features::registration() : null,
         config('features.email_enabled') ? Features::resetPasswords() : null,
         config('features.email_enabled') ? Features::emailVerification() : null,
         Features::updateProfileInformation(),

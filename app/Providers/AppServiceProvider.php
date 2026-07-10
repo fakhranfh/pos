@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Http\Responses\CustomAuthenticatedSessionResponse;
 use App\Http\Responses\CustomVerifyEmailViewResponse;
+use App\Models\User;
 use App\Repositories\Auth\AuthRepository;
 use App\Repositories\Auth\AuthRepositoryInterface;
 use App\Repositories\Category\CategoryRepository;
@@ -18,10 +19,15 @@ use App\Repositories\TransactionItem\TransactionItemRepository;
 use App\Repositories\TransactionItem\TransactionItemRepositoryInterface;
 use App\Repositories\User\UserRepository;
 use App\Repositories\User\UserRepositoryInterface;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\LoginResponse;
 use Laravel\Fortify\Contracts\VerifyEmailViewResponse;
+use Laravel\Fortify\Fortify;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -55,5 +61,22 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('userDatetime', function (string $expression) {
             return "<?php echo \App\Support\UserTimezone::format({$expression}); ?>";
         });
+
+        Fortify::authenticateUsing(function (Request $request) {
+            $user = User::where('email', $request->email)->first();
+
+            // Always run a bcrypt comparison, even when no user matches, so
+            // the response time doesn't reveal whether the email is registered.
+            if (Hash::check($request->password, $user?->password ?? $this->dummyPasswordHash())) {
+                return $user;
+            }
+
+            return null;
+        });
+    }
+
+    private function dummyPasswordHash(): string
+    {
+        return Cache::rememberForever('auth.dummy_password_hash', fn () => Hash::make(Str::random(32)));
     }
 }

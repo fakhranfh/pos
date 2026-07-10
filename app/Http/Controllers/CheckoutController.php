@@ -82,11 +82,12 @@ class CheckoutController extends Controller
             ->with('success', __('Transaction completed successfully.'));
     }
 
-    public function receipt($id)
+    public function receipt(Request $request, $id)
     {
         $transaction = $this->transactionService->find($id);
 
         abort_if(! $transaction, 404);
+        abort_if($transaction->cashier_id !== $request->user()->id, 403);
 
         $transaction->load(['items', 'cashier']);
 

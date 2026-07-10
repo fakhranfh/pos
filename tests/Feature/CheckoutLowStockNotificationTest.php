@@ -5,7 +5,14 @@ use App\Models\Product;
 use App\Models\User;
 use App\Notifications\LowStockAlert;
 use App\Services\TransactionService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
+
+beforeEach(function () {
+    // The per-product low-stock alert cooldown is cache-backed; clear it so
+    // tests don't leak state via colliding auto-increment product IDs.
+    Cache::flush();
+});
 
 function createLowStockTestProduct(int $stock, int $threshold): Product
 {
@@ -106,4 +113,27 @@ test('a low stock notification is sent again when stock was already at or below 
     expect($product->fresh()->stock)->toBe(4);
 
     Notification::assertSentTo($cashier, LowStockAlert::class);
+});
+
+test('a second low-stock-triggering checkout for the same product within the cooldown window does not send another notification', function () {
+    Notification::fake();
+
+    $product = createLowStockTestProduct(stock: 10, threshold: 8);
+    $cashier = User::factory()->create();
+
+    $checkout = fn () => app(TransactionService::class)->checkout([
+        'items' => [
+            ['product_id' => $product->id, 'quantity' => 1],
+        ],
+        'discount_amount' => 0,
+        'tax_amount' => 0,
+        'payment_method' => 'cash',
+        'amount_tendered' => 1000,
+        'cashier_id' => $cashier->id,
+    ]);
+
+    $checkout();
+    $checkout();
+
+    Notification::assertSentToTimes($cashier, LowStockAlert::class, 1);
 });

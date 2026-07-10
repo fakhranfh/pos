@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Transaction\UpdateTransactionRequest;
-use App\Http\Responses\MessageResponse;
 use App\Http\Responses\PaginatedResponse;
 use App\Models\User;
 use App\Services\TransactionService;
@@ -53,39 +51,13 @@ class TransactionController extends Controller
 
     public function show($id)
     {
-        $item = $this->transactionService->find($id)->load(['cashier', 'items']);
+        $item = $this->transactionService->find($id);
+        abort_if(! $item, 404);
+        $item->load(['cashier', 'items']);
         $foreignData = $this->foreignData();
 
         return view('app.transaction.show', [
             'item' => $item,
         ] + $foreignData);
-    }
-
-    public function edit($id)
-    {
-        $item = $this->transactionService->find($id);
-        $foreignData = $this->foreignData();
-
-        return view('app.transaction.edit', [
-            'item' => $item,
-        ] + $foreignData);
-    }
-
-    public function update(UpdateTransactionRequest $request, $id)
-    {
-        $this->transactionService->update($id, $request->validated());
-
-        return redirect()->route('transactions.show', $id)->with('success', __('Transactions updated successfully.'));
-    }
-
-    public function destroy($id)
-    {
-        $this->transactionService->delete($id);
-
-        if (request()->expectsJson()) {
-            return new MessageResponse(__('Item deleted successfully.'));
-        }
-
-        return redirect()->route('transactions.index')->with('success', __('Transactions deleted successfully.'));
     }
 }

@@ -15,8 +15,18 @@ class ReportController extends Controller
         $this->reportService = $reportService;
     }
 
+    private function dateRangeRules(): array
+    {
+        return [
+            'date_from' => 'nullable|date_format:Y-m-d',
+            'date_to' => 'nullable|date_format:Y-m-d|after_or_equal:date_from',
+        ];
+    }
+
     public function sales(Request $request)
     {
+        $request->validate($this->dateRangeRules());
+
         $totals = $this->reportService->salesTotals(
             $request->query('date_from'),
             $request->query('date_to'),
@@ -27,6 +37,8 @@ class ReportController extends Controller
 
     public function salesTotals(Request $request)
     {
+        $request->validate($this->dateRangeRules());
+
         return response()->json($this->reportService->salesTotals(
             $request->query('date_from'),
             $request->query('date_to'),
@@ -35,6 +47,8 @@ class ReportController extends Controller
 
     public function salesProducts(Request $request)
     {
+        $request->validate($this->dateRangeRules());
+
         $filters = $request->only(['date_from', 'date_to']);
         $perPage = (int) $request->query('per_page', 15);
         $items = $this->reportService->topSellingProducts($filters, $request->query('sort'), $request->query('direction', 'desc'), $perPage);

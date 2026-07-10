@@ -9,6 +9,7 @@ use App\Repositories\StockMovement\StockMovementRepositoryInterface;
 use App\Repositories\Transaction\TransactionRepositoryInterface;
 use App\Repositories\TransactionItem\TransactionItemRepositoryInterface;
 use App\Support\UserTimezone;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
@@ -104,13 +105,23 @@ class TransactionService
                     'user_id' => $data['cashier_id'],
                 ]);
 
-                if ($product->stock <= $product->low_stock_threshold) {
+                if ($product->stock <= $product->low_stock_threshold && $this->shouldSendLowStockAlert($product)) {
                     Notification::send(User::all(), new LowStockAlert($product));
                 }
             }
 
             return $transaction->load(['items', 'cashier']);
         });
+    }
+
+    /**
+     * Only allow one LowStockAlert per product per day, so repeatedly
+     * checking out small quantities of a low-stock item can't flood every
+     * user's notifications.
+     */
+    private function shouldSendLowStockAlert(Product $product): bool
+    {
+        return Cache::add("low-stock-alert-sent:{$product->id}", true, now()->addDay());
     }
 
     private function generateInvoiceNumber(): string

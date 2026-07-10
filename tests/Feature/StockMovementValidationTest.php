@@ -34,7 +34,20 @@ test('reason is required when creating an adjustment movement', function () {
     $response->assertSessionHasErrors('reason');
 });
 
-test('reason is not required when creating a sale movement', function () {
+test('reason is not required when creating a stock-in movement', function () {
+    $product = createValidationTestProduct();
+
+    $response = $this->post(route('stock-movements.store'), [
+        'product_id' => $product->id,
+        'type' => 'stock_in',
+        'quantity_change' => 2,
+        'reason' => '',
+    ]);
+
+    $response->assertSessionDoesntHaveErrors('reason');
+});
+
+test('sale-type movements cannot be submitted manually', function () {
     $product = createValidationTestProduct();
 
     $response = $this->post(route('stock-movements.store'), [
@@ -44,7 +57,7 @@ test('reason is not required when creating a sale movement', function () {
         'reason' => '',
     ]);
 
-    $response->assertSessionDoesntHaveErrors('reason');
+    $response->assertSessionHasErrors('type');
 });
 
 test('the authenticated user is recorded as the actor on creation', function () {

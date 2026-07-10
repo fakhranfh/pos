@@ -7,6 +7,7 @@ use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Responses\MessageResponse;
 use App\Http\Responses\PaginatedResponse;
 use App\Services\CategoryService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -54,6 +55,7 @@ class CategoryController extends Controller
     public function show($id)
     {
         $item = $this->categoryService->find($id);
+        abort_if(! $item, 404);
         $foreignData = $this->foreignData();
 
         return view('app.category.show', [
@@ -76,6 +78,7 @@ class CategoryController extends Controller
     public function edit($id)
     {
         $item = $this->categoryService->find($id);
+        abort_if(! $item, 404);
         $foreignData = $this->foreignData();
 
         return view('app.category.edit', [
@@ -92,7 +95,17 @@ class CategoryController extends Controller
 
     public function destroy($id)
     {
-        $this->categoryService->delete($id);
+        try {
+            $this->categoryService->delete($id);
+        } catch (QueryException $e) {
+            $message = __('This category cannot be deleted because it is still in use by one or more products.');
+
+            if (request()->expectsJson()) {
+                return new MessageResponse($message, 422);
+            }
+
+            return redirect()->route('categories.index')->withErrors(['category' => $message]);
+        }
 
         if (request()->expectsJson()) {
             return new MessageResponse(__('Item deleted successfully.'));

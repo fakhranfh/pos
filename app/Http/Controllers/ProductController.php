@@ -69,6 +69,7 @@ class ProductController extends Controller
     public function show($id)
     {
         $item = $this->productService->find($id);
+        abort_if(! $item, 404);
         $foreignData = $this->foreignData();
 
         return view('app.product.show', [
@@ -98,6 +99,7 @@ class ProductController extends Controller
     public function edit($id)
     {
         $item = $this->productService->find($id);
+        abort_if(! $item, 404);
         $foreignData = $this->foreignData();
 
         return view('app.product.edit', [
