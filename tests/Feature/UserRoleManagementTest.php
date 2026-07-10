@@ -43,14 +43,27 @@ test('an admin can promote a cashier to manager', function () {
     expect($target->fresh()->role)->toBe(UserRole::Manager);
 });
 
-test('an admin can demote another admin to cashier', function () {
+test('an admin can demote another admin to cashier when enough admins remain', function () {
     $this->actingAs(User::factory()->admin()->create());
+    User::factory()->admin()->create();
     $target = User::factory()->admin()->create();
 
     $response = $this->put(route('users.update', $target), ['role' => 'cashier']);
 
     $response->assertRedirect(route('users.index'));
     expect($target->fresh()->role)->toBe(UserRole::Cashier);
+});
+
+test('an admin cannot demote another admin if it would drop below the minimum admin count', function () {
+    User::query()->where('role', UserRole::Admin)->delete();
+    $this->actingAs(User::factory()->admin()->create());
+    $target = User::factory()->admin()->create();
+
+    $response = $this->put(route('users.update', $target), ['role' => 'cashier']);
+
+    $response->assertRedirect(route('users.edit', $target));
+    $response->assertSessionHasErrors('role');
+    expect($target->fresh()->role)->toBe(UserRole::Admin);
 });
 
 test('an admin cannot demote themselves, to avoid locking everyone out', function () {

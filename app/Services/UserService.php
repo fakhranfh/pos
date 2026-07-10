@@ -32,9 +32,11 @@ class UserService
             ]);
         }
 
-        if ($target->role === UserRole::Admin && $role !== UserRole::Admin && User::where('role', UserRole::Admin)->count() <= 1) {
+        $minimumAdmins = (int) config('security.minimum_admins', 2);
+
+        if ($target->role === UserRole::Admin && $role !== UserRole::Admin && User::where('role', UserRole::Admin)->count() <= $minimumAdmins) {
             throw ValidationException::withMessages([
-                'role' => __('You cannot remove the last remaining admin.'),
+                'role' => __('You cannot demote this admin: at least :count admins must remain.', ['count' => $minimumAdmins]),
             ]);
         }
 
